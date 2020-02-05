@@ -79,30 +79,30 @@
 
 
 
-<meta name="description" content="1. can shallow NN fit any function?已经知道的结论是，一个单隐层fcnn而已拟合任意连续函数，那么如何证明呢？首先，在该问题场景下定义出拟合的概念，如下：假定输入的x∈[0,1]，输出y不限定，同时定义一个映射空间和k有关，则对于任意小的数$\epsilon$ ，[0,1]区间之间拟合误差的最大值需要小于该设定的$\epsilon$，因为只要误差最大值小于设定的数">
+<meta name="description" content="1. can shallow NN fit any function? 已经知道的结论是，一个单隐层fcnn而已拟合任意连续函数，那么如何证明呢？首先，在该问题场景下定义出拟合的概念，如下：  假定输入的x∈[0,1]，输出y不限定，同时定义一个映射空间和k有关，则对于任意小的数$\epsilon$ ，[0,1]区间之间拟合误差的最大值需要小于该设定的$\epsilon$，因为只要误差最大值小于设">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深度学习中网络拟合能力和网络深度的理论分析">
-<meta property="og:url" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep/index.html">
+<meta property="og:url" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/index.html">
 <meta property="og:site_name" content="MioKinHuang &#39;s Blog">
-<meta property="og:description" content="1. can shallow NN fit any function?已经知道的结论是，一个单隐层fcnn而已拟合任意连续函数，那么如何证明呢？首先，在该问题场景下定义出拟合的概念，如下：假定输入的x∈[0,1]，输出y不限定，同时定义一个映射空间和k有关，则对于任意小的数$\epsilon$ ，[0,1]区间之间拟合误差的最大值需要小于该设定的$\epsilon$，因为只要误差最大值小于设定的数">
-<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep/img/2020-02-05-22-38-41.png">
-<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep/img/2020-02-05-22-39-02.png">
-<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep/img/2020-02-05-22-40-20.png">
-<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep/img/!%5B%5D(index_files/a26795c2-26a8-4039-9b70-2c9b2d7afe71.jpg).png">
-<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep/img/2020-02-05-22-41-10.png">
-<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep/img/2020-02-05-22-41-29.png">
-<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep/img/2020-02-05-22-41-59.png">
-<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep/img/2020-02-05-22-42-35.png">
-<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep/img/2020-02-05-22-42-47.png">
-<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep/img/2020-02-05-22-42-57.png">
-<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep/img/2020-02-05-22-43-07.png">
-<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep/img/2020-02-05-22-43-21.png">
-<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep/img/2020-02-05-22-44-23.png">
+<meta property="og:description" content="1. can shallow NN fit any function? 已经知道的结论是，一个单隐层fcnn而已拟合任意连续函数，那么如何证明呢？首先，在该问题场景下定义出拟合的概念，如下：  假定输入的x∈[0,1]，输出y不限定，同时定义一个映射空间和k有关，则对于任意小的数$\epsilon$ ，[0,1]区间之间拟合误差的最大值需要小于该设定的$\epsilon$，因为只要误差最大值小于设">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-38-41.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-39-02.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-40-20.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-23-24-56.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-41-10.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-41-29.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-41-59.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-42-35.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-42-47.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-42-57.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-43-07.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-43-21.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-44-23.png">
 <meta property="article:published_time" content="2020-02-05T08:52:11.000Z">
-<meta property="article:modified_time" content="2020-02-05T14:45:04.546Z">
+<meta property="article:modified_time" content="2020-02-05T15:32:19.827Z">
 <meta property="article:author" content="MioKinHuang">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep/img/2020-02-05-22-38-41.png">
+<meta name="twitter:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-38-41.png">
 
 
 
@@ -132,7 +132,7 @@
 
 
 
-  <link rel="canonical" href="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep/"/>
+  <link rel="canonical" href="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/"/>
 
 
 
@@ -245,7 +245,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep/">
+    <link itemprop="mainEntityOfPage" href="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="MioKinHuang">
@@ -312,17 +312,38 @@
       
 
       
-        <h3 id="1-can-shallow-NN-fit-any-function"><a href="#1-can-shallow-NN-fit-any-function" class="headerlink" title="1. can shallow NN fit any function?"></a>1. can shallow NN fit any function?</h3><p><img src="img/2020-02-05-22-38-41.png" alt=""><br>已经知道的结论是，一个单隐层fcnn而已拟合任意连续函数，那么如何证明呢？<br>首先，在该问题场景下定义出拟合的概念，如下：<br><img src="img/2020-02-05-22-39-02.png" alt=""><br>假定输入的x∈[0,1]，输出y不限定，同时定义一个映射空间和k有关，则对于任意小的数$\epsilon$ ，[0,1]区间之间拟合误差的最大值需要小于该设定的$\epsilon$，因为只要误差最大值小于设定的数，即可推出L2积分误差小于该设定值，符合函数拟合的定义。</p>
-<p>证明：<br>这里只证明待拟合函数$f$是L-Lipschitz函数的情况。定义如下：<br><img src="img/2020-02-05-22-40-20.png" alt=""><br>意味着说输出的变化会小于输入的变化，即该函数起伏较小，是一个较平滑且起伏缓和的函数。</p>
-<p>然后回到拟合的问题上，对于待拟合函数f，如下图，假如我们在f上均匀采样若干个点，每两个点的距离设定为$l$，然后将这些点连接起来，就可以得到初步的拟合函数g，同时，根据拟合的定义，每一段的最大拟合误差需要小于设定的$\epsilon$，又根据Lipschitz条件，我们可以知道图中的$error$一定是小于等于$l<em>L$ ，因此只要使得$l</em>L&lt;=\epsilon$成立，则目标达成，由此可以得到$k=\frac{1}{l}&gt;=\frac{L}{\epsilon}$<br>即只要切分的数量k够多，对于任意小的$\epsilon$都可以满足拟合条件，由此证明完毕。<br><img src="img/!%5B%5D(index_files/a26795c2-26a8-4039-9b70-2c9b2d7afe71.jpg).png" alt=""></p>
-<p>直观地来说，上图的折线图在实际的网络中可以这样凑出来，如下图：<br><img src="img/2020-02-05-22-41-10.png" alt=""><br>每个小区间的直线可以使用两个ReLU函数拼接出来，故最终的网络如下，可以先使用两倍的神经元和ReLU数量得到每段折线图，然后将这些折线图加起来总的折线图。下图的NN实质上是单隐层。<br><img src="img/2020-02-05-22-41-29.png" alt=""></p>
+        <h3 id="1-can-shallow-NN-fit-any-function"><a href="#1-can-shallow-NN-fit-any-function" class="headerlink" title="1. can shallow NN fit any function?"></a>1. can shallow NN fit any function?</h3><img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-38-41.png" class="">
+<p>已经知道的结论是，一个单隐层fcnn而已拟合任意连续函数，那么如何证明呢？<br>首先，在该问题场景下定义出拟合的概念，如下：</p>
+<img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-39-02.png" class="">
+<p>假定输入的x∈[0,1]，输出y不限定，同时定义一个映射空间和k有关，则对于任意小的数$\epsilon$ ，[0,1]区间之间拟合误差的最大值需要小于该设定的$\epsilon$，因为只要误差最大值小于设定的数，即可推出L2积分误差小于该设定值，符合函数拟合的定义。</p>
+<p>证明：<br>这里只证明待拟合函数$f$是L-Lipschitz函数的情况。定义如下：</p>
+<img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-40-20.png" class="">
+<p>意味着说输出的变化会小于输入的变化，即该函数起伏较小，是一个较平滑且起伏缓和的函数。</p>
+<p>然后回到拟合的问题上，对于待拟合函数f，如下图，假如我们在f上均匀采样若干个点，每两个点的距离设定为$l$，然后将这些点连接起来，就可以得到初步的拟合函数g，同时，根据拟合的定义，每一段的最大拟合误差需要小于设定的$\epsilon$，又根据Lipschitz条件，我们可以知道图中的$error$一定是小于等于$l<em>L$ ，因此只要使得$l</em>L&lt;=\epsilon$成立，则目标达成，由此可以得到$k=\frac{1}{l}&gt;=\frac{L}{\epsilon}$<br>即只要切分的数量k够多，对于任意小的$\epsilon$都可以满足拟合条件，由此证明完毕。</p>
+<img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-23-24-56.png" class="">
+<p>直观地来说，上图的折线图在实际的网络中可以这样凑出来，如下图：</p>
+<img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-41-10.png" class="">
+<p>每个小区间的直线可以使用两个ReLU函数拼接出来，故最终的网络如下，可以先使用两倍的神经元和ReLU数量得到每段折线图，然后将这些折线图加起来总的折线图。下图的NN实质上是单隐层。</p>
+<img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-41-29.png" class="">
+
 <p>由此可以证明，单隐层网络足够拟合任意的连续函数。但是客观上需要的神经单元可能不需要用到以上证明用的这么多。</p>
 <h3 id="2-So-why-deep"><a href="#2-So-why-deep" class="headerlink" title="2. So why deep?"></a>2. So why deep?</h3><p>既然上一节已经证明了shallow NN已经足够拟合任意连续函数，为什么还这么热衷于deep NN?<br>受限于严谨的数学描述工具来描述深度网络，其实很难完美地回答这个问题。<br>一些感性的答案，基本是从宏观的，笼统的角度来阐述。</p>
 <ol>
-<li>从电子设计中的逻辑电路设计这个角度来类比。我们知道，使用一个两层的基础逻辑器件可以搭建出任何的单元逻辑门。同样的，两层的网络可以拟合任何的连续函数，不严谨的说，这两者具有类比效果。我们知道，如果设计一个逻辑电路，设计深度较深的，可以节省逻辑门。从这里类别到，同样的神经元数量，搭建深度较深且窄的网络，拟合效果强于浅且宽的网络。<br><img src="img/2020-02-05-22-41-59.png" alt=""></li>
-<li>同样的神经元数量，更深的网络可以更容易地拟合复杂函数。先看另一个问题。一个具有$n$个神经元的函数，能产生的等价函数是一个多少段的分段函数？答案是很难说清，但是可以证明，上界是$2^n$，示意图如下所示：每个神经元有两种激活状态，故总体来看，网络一共是$2^n$种激活可能。（这是一个上界，实际上可能是很难达到这个上界的）<br><img src="img/2020-02-05-22-42-35.png" alt=""><br>针对一个具体的例子，例如$f(x)=x^2$，需要多少个片段才能拟合地好，这个比较难计算，但是如果规定分段函数的每一段都是等宽的，则比较容易算，结果如下图：<br><img src="img/2020-02-05-22-42-47.png" alt=""><br>附：实际上这种平方的网络是用很多普适性的。如下：<br><img src="img/2020-02-05-22-42-57.png" alt=""><br>可以非常简单地获得两个数的乘积网络。然后从这点出发，可以继续产生多项式的网络，然后再按照泰勒展开式进一步产生指数型的网络，如下：<br><img src="img/2020-02-05-22-43-07.png" alt=""><br>说回我们的问题，其实到这里还是证明不了deep的下限，但是，已经能找到deep的其中一个范围，即$O(log_2 \frac{1}{\sqrt{\epsilon}})$。同时，用其他的复杂方法，可以证明shadow的方法的上限是$O(\frac{1}{\sqrt{\epsilon}})$，故deep一定好过shadow（当然，有一个前提，即要拟合的函数要比$y=x^2$更复杂。形如一次函数，shadow的可能更好）。<br><img src="img/2020-02-05-22-43-21.png" alt=""></li>
+<li>从电子设计中的逻辑电路设计这个角度来类比。我们知道，使用一个两层的基础逻辑器件可以搭建出任何的单元逻辑门。同样的，两层的网络可以拟合任何的连续函数，不严谨的说，这两者具有类比效果。我们知道，如果设计一个逻辑电路，设计深度较深的，可以节省逻辑门。从这里类别到，同样的神经元数量，搭建深度较深且窄的网络，拟合效果强于浅且宽的网络。<img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-41-59.png" class=""></li>
+<li>同样的神经元数量，更深的网络可以更容易地拟合复杂函数。先看另一个问题。一个具有$n$个神经元的函数，能产生的等价函数是一个多少段的分段函数？答案是很难说清，但是可以证明，上界是$2^n$，示意图如下所示：每个神经元有两种激活状态，故总体来看，网络一共是$2^n$种激活可能。（这是一个上界，实际上可能是很难达到这个上界的）<img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-42-35.png" class="">
+针对一个具体的例子，例如$f(x)=x^2$，需要多少个片段才能拟合地好，这个比较难计算，但是如果规定分段函数的每一段都是等宽的，则比较容易算，结果如下图：<img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-42-47.png" class="">
+附：实际上这种平方的网络是用很多普适性的。如下：<img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-42-57.png" class="">
+可以非常简单地获得两个数的乘积网络。然后从这点出发，可以继续产生多项式的网络，然后再按照泰勒展开式进一步产生指数型的网络，如下：<img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-43-07.png" class="">
+说回我们的问题，其实到这里还是证明不了deep的下限，但是，已经能找到deep的其中一个范围，即$O(log_2 \frac{1}{\sqrt{\epsilon}})$。同时，用其他的复杂方法，可以证明shadow的方法的上限是$O(\frac{1}{\sqrt{\epsilon}})$，故deep一定好过shadow（当然，有一个前提，即要拟合的函数要比$y=x^2$更复杂。形如一次函数，shadow的可能更好）。<img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-43-21.png" class="">
+
+</li>
 </ol>
-<p>最后是敢于deep下限的问题，实际上还没有较一统的结论，目前有一些尝试求证deep的下限的工作：<br><img src="img/2020-02-05-22-44-23.png" alt=""></p>
+<p>最后是敢于deep下限的问题，实际上还没有较一统的结论，目前有一些尝试求证deep的下限的工作：</p>
+<img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-44-23.png" class="">
+
+
+
+
 
       
     </div>
