@@ -300,19 +300,9 @@
         
           
             <h3 id="1-can-shallow-NN-fit-any-function"><a href="#1-can-shallow-NN-fit-any-function" class="headerlink" title="1. can shallow NN fit any function?"></a>1. can shallow NN fit any function?</h3><img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-38-41.png" class="">
-<p>已经知道的结论是，一个单隐层fcnn而已拟合任意连续函数，那么如何证明呢？<br>首先，在该问题场景下定义出拟合的概念，如下：</p>
-<img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-39-02.png" class="">
-<p>假定输入的x∈[0,1]，输出y不限定，同时定义一个映射空间和k有关，则对于任意小的数$\epsilon$ ，[0,1]区间之间拟合误差的最大值需要小于该设定的$\epsilon$，因为只要误差最大值小于设定的数，即可推出L2积分误差小于该设定值，符合函数拟合的定义。</p>
-<p>证明：<br>这里只证明待拟合函数$f$是L-Lipschitz函数的情况。定义如下：</p>
-<img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-40-20.png" class="">
-<p>意味着说输出的变化会小于输入的变化，即该函数起伏较小，是一个较平滑且起伏缓和的函数。</p>
-<p>然后回到拟合的问题上，对于待拟合函数f，如下图，假如我们在f上均匀采样若干个点，每两个点的距离设定为$l$，然后将这些点连接起来，就可以得到初步的拟合函数g，同时，根据拟合的定义，每一段的最大拟合误差需要小于设定的$\epsilon$，又根据Lipschitz条件，我们可以知道图中的$error$一定是小于等于$l<em>L$ ，因此只要使得$l</em>L&lt;=\epsilon$成立，则目标达成，由此可以得到$k=\frac{1}{l}&gt;=\frac{L}{\epsilon}$<br>即只要切分的数量k够多，对于任意小的$\epsilon$都可以满足拟合条件，由此证明完毕。</p>
-<img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-23-24-56.png" class="">
-<p>直观地来说，上图的折线图在实际的网络中可以这样凑出来，如下图：</p>
-<img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-41-10.png" class="">
-<p>每个小区间的直线可以使用两个ReLU函数拼接出来，故最终的网络如下，可以先使用两倍的神经元和ReLU数量得到每段折线图，然后将这些折线图加起来总的折线图。下图的NN实质上是单隐层。</p>
-<img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-41-29.png" class="">
-
+<p>已经知道的结论是，一个单隐层fcnn而已拟合任意连续函数，那么如何证明呢？<br>首先，在该问题场景下定义出拟合的概念，如下：<br><img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-39-02.png" class=""><br>假定输入的x∈[0,1]，输出y不限定，同时定义一个映射空间和k有关，则对于任意小的数$\epsilon$ ，[0,1]区间之间拟合误差的最大值需要小于该设定的$\epsilon$，因为只要误差最大值小于设定的数，即可推出L2积分误差小于该设定值，符合函数拟合的定义。</p>
+<p>证明：<br>这里只证明待拟合函数$f$是L-Lipschitz函数的情况。定义如下：<br><img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-40-20.png" class=""><br>意味着说输出的变化会小于输入的变化，即该函数起伏较小，是一个较平滑且起伏缓和的函数。</p>
+<p>然后回到拟合的问题上，对于待拟合函数f，如下图，假如我们在f上均匀采样若干个点，每两个点的距离设定为$l$，然后将这些点连接起来，就可以得到初步的拟合函数g，同时，根据拟合的定义，每一段的最大拟合误差需要小于设定的$\epsilon$，又根据Lipschitz条件，我们可以知道图中的$error$一定是小于等于$ l L $，因此只要使得$ l L &lt;= \epsilon $成立，则目标达成，由此可以得到$ k=\frac{1}{l} &gt;= \frac{L}{\epsilon} $<br>即只要切分的数量k够多，对于任意小的$\epsilon$都可以满足拟合条件，由此证明完毕。<br><img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-23-24-56.png" class=""><br>直观地来说，上图的折线图在实际的网络中可以这样凑出来，如下图：<br><img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-41-10.png" class=""><br>每个小区间的直线可以使用两个ReLU函数拼接出来，故最终的网络如下，可以先使用两倍的神经元和ReLU数量得到每段折线图，然后将这些折线图加起来总的折线图。下图的NN实质上是单隐层。<br><img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-41-29.png" class=""></p>
 <p>由此可以证明，单隐层网络足够拟合任意的连续函数。但是客观上需要的神经单元可能不需要用到以上证明用的这么多。</p>
 <h3 id="2-So-why-deep"><a href="#2-So-why-deep" class="headerlink" title="2. So why deep?"></a>2. So why deep?</h3><p>既然上一节已经证明了shallow NN已经足够拟合任意连续函数，为什么还这么热衷于deep NN?<br>受限于严谨的数学描述工具来描述深度网络，其实很难完美地回答这个问题。<br>一些感性的答案，基本是从宏观的，笼统的角度来阐述。</p>
 <ol>
@@ -322,15 +312,9 @@
 附：实际上这种平方的网络是用很多普适性的。如下：<img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-42-57.png" class="">
 可以非常简单地获得两个数的乘积网络。然后从这点出发，可以继续产生多项式的网络，然后再按照泰勒展开式进一步产生指数型的网络，如下：<img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-43-07.png" class="">
 说回我们的问题，其实到这里还是证明不了deep的下限，但是，已经能找到deep的其中一个范围，即$O(log_2 \frac{1}{\sqrt{\epsilon}})$。同时，用其他的复杂方法，可以证明shadow的方法的上限是$O(\frac{1}{\sqrt{\epsilon}})$，故deep一定好过shadow（当然，有一个前提，即要拟合的函数要比$y=x^2$更复杂。形如一次函数，shadow的可能更好）。<img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-43-21.png" class="">
-
 </li>
 </ol>
-<p>最后是敢于deep下限的问题，实际上还没有较一统的结论，目前有一些尝试求证deep的下限的工作：</p>
-<img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-44-23.png" class="">
-
-
-
-
+<p>以上是对于网络深度和拟合能力之间的关系的一些探究，还留下一个关于deep下限的问题，这实际上还没有较一统的结论，目前有一些尝试求证deep的下限的工作：<br><img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-44-23.png" class=""></p>
 
           
         
@@ -629,6 +613,28 @@
   
 
   
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
 
   
 
