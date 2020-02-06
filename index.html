@@ -228,6 +228,1171 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huangmiaoxin.github.io/2020/02/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E4%B8%8B%E4%B8%80%E6%AD%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MioKinHuang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MioKinHuang 's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/02/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E4%B8%8B%E4%B8%80%E6%AD%A5/" itemprop="url">机器学习当前发展中的一些问题</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-06T23:18:24+08:00">
+                2020-02-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%9B%B8%E5%85%B3%E7%90%86%E8%AE%BA/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习相关理论</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>本文是李宏毅老师的公开课的学习记录，全部图片来自李老师的课件。文字按照个人理解做了组织和阐释。主要探讨了当前机器（深度）学习发展中的一些大的技术问题。</p>
+<h3 id="1-可解释性"><a href="#1-可解释性" class="headerlink" title="1. 可解释性"></a>1. 可解释性</h3><h4 id="1-1-Local-explanation"><a href="#1-1-Local-explanation" class="headerlink" title="1.1 Local explanation"></a>1.1 Local explanation</h4><p>局部解释：例如：网络将某个图片分类为猫，希望知道网络通过哪个区域判断该图片。<br>直观思路：可以使用一个小方块随机遮挡图片中的某块区域，看分类网络把遮挡之后的图像分类为猫的概率的变化，判断该区域对判断为猫的重要程度。如下：蓝色的区域表示对分类结果影响较大的区域。<br><img src="/2020/02/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E4%B8%8B%E4%B8%80%E6%AD%A5/2020-02-06-23-24-01.png" class=""></p>
+<h4 id="1-2-Global-explanation"><a href="#1-2-Global-explanation" class="headerlink" title="1.2 Global explanation"></a>1.2 Global explanation</h4><img src="/2020/02/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E4%B8%8B%E4%B8%80%E6%AD%A5/2020-02-06-23-24-15.png" class="">
+<p>直观思路：随机生成一些图片，直接输入到分类网络，筛选出网络认为的某类图片，例如最后的分类向量第一维代表数字0，则筛选出使得该维度强度最大的输入图片，标记为图片认为的数字0.但实际上，这样获得的图片，完全不是人看起来的0，如上图。<br>全局解释：例如：网络将某个物品分类为猫，希望解释为什么网络认为是猫。<br>原因应该是，高维空间非常广阔，分类网络被训练的时候只是简单拟合了自然图像，这只是图像空间中非常少数的一部分，当在图像空间中随机采样获得‘图片’时，存在众多图像可以使得分类网络误判。可以尝试做一下限制，例如，正常我们理解的数字0的图像，其实是少数黑色像素构成数字0，图像背景白色，因此可以考虑加一些这类约束，如下图：<br><img src="/2020/02/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E4%B8%8B%E4%B8%80%E6%AD%A5/2020-02-06-23-24-24.png" class=""><br>增加了这种约束之后，筛选的图像质量明显提高，尤其是数字6，基本看得到数字的轮廓。<br>上面这样的约束过于简单，输入的图像实际上很多时候依然不是正常的人类认为的图像，可以考虑进一步增加约束，使得输入的图像是真实图像，可以考虑生成模型，如下：<br><img src="/2020/02/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E4%B8%8B%E4%B8%80%E6%AD%A5/2020-02-06-23-24-32.png" class=""><br>使用GAN或者VAE的生成器，通过随机采样潜在向量z，获得真实图像，然后输入到分类网络做分类并筛选，基本上这种做法效果会好很多。<br>下面是《Plug &amp; Play Generative Networks: Conditional Iterative Generation of Images in Latent Space》中的结果，效果非常惊艳。<br><img src="/2020/02/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E4%B8%8B%E4%B8%80%E6%AD%A5/2020-02-06-23-24-43.png" class=""></p>
+<h4 id="1-3-using-a-model-to-explain-another"><a href="#1-3-using-a-model-to-explain-another" class="headerlink" title="1.3 using a model to explain another"></a>1.3 using a model to explain another</h4><p>可以尝试使用可解释性的模型来解释黑盒网络，例如，使用容易解释的线性模型来解释某个区域内的黑盒网络。如下：<br>通过在某个点的附近随机采样多一些点，然后使用线性模型来拟合这些点，然后分析线性模型的参数来判断黑盒在该点附近的一些性质。<br><img src="/2020/02/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E4%B8%8B%E4%B8%80%E6%AD%A5/2020-02-06-23-24-52.png" class=""><br><img src="/2020/02/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E4%B8%8B%E4%B8%80%E6%AD%A5/2020-02-06-23-25-00.png" class=""></p>
+<p>具体的例子结合paper《LIME - Local Interpretable Model-Agnostic Explanation》，该paper提出了一种使用可解释模型来解释黑盒网络的local explanation的方法LIME。<br>思路是直接对某个样本制作多一些测试数据，用来测试黑盒子在该样本点上的一些性质，例如下图通过随机遮挡图像的某些区块创造新的测试数据，然后将所有数据输入到网络中，记录下输出结果，然后使用线性模型来拟合输出结果。但实际上很难直接用线性网络来拟合图像分类结果，考虑到测试数据其实都是来自同一个图像，因此不需要再靠网络来编码众多区块，直接按照顺序把区块编号即可，将区块的有无作为编码信息，把01编码串作为线性模型的输入。最后，可以按照训练好的线性模型在每一个维度的权重来判断模型认为每个区块对判断为青蛙（图中分类结果）的重要程度。<br><img src="/2020/02/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E4%B8%8B%E4%B8%80%E6%AD%A5/2020-02-06-23-25-22.png" class=""><br><img src="/2020/02/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E4%B8%8B%E4%B8%80%E6%AD%A5/2020-02-06-23-25-31.png" class=""><br><img src="/2020/02/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E4%B8%8B%E4%B8%80%E6%AD%A5/2020-02-06-23-25-43.png" class=""></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huangmiaoxin.github.io/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MioKinHuang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MioKinHuang 's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/" itemprop="url">无监督带条件约束的GAN</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-06T23:09:58+08:00">
+                2020-02-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%9B%B8%E5%85%B3%E7%90%86%E8%AE%BA/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习相关理论</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>本文是李宏毅老师的公开课的学习记录，全部图片来自李老师的课件。文字按照个人理解做了组织和阐释。主要介绍了基于GAN衍生出来的一些技术，无监督的带条件约束GAN，典型如CycleGAN。</p>
+<hr>
+<h3 id="Unsupervised-Conditional-Generation"><a href="#Unsupervised-Conditional-Generation" class="headerlink" title="Unsupervised Conditional Generation"></a>Unsupervised Conditional Generation</h3><p>在conditional GAN中，例如训练一个给定文字描述产生对应的图片的模型，需要收集一些文字和对应图片的平行语料。但某些情况下，conditional GAN可以不用平行语料。一个常见的例子是图像风格的转化，如下：<br><img src="/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/2020-02-06-23-12-02.png" class=""><br>将写实风格的图片直接转化为梵高风格的图片。两个思路，一个是生成方法：使用根据两个domain之间的样本存在轮廓相同等特征，加一些约束，构建conditional GAN。另一个是比较直观的思路：将风景画和梵高的画都分别编码到一个空间，然后利用一些对齐的方法（例如使用少部分的平行数据）将这两个空间对齐。</p>
+<h4 id="1-direct-transform"><a href="#1-direct-transform" class="headerlink" title="1. direct transform"></a>1. direct transform</h4><p>把domain1的数据直接作为条件输入生成器G，产生新数据，然后使用分类器D进行判断，如下：<br><img src="/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/2020-02-06-23-12-11.png" class=""><br>这样直接做下去，生成器G可以直接生成和输入完全无关的图像，例如直接输出梵高的自画像，就能直接骗过分类器D。所以需要增加额外的约束，一个很明显的约束是限制生成器的输出和G在轮廓上相近，如下图：<br><img src="/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/2020-02-06-23-12-19.png" class=""><br>直接使用一个预训练的CNN接收G的输入和输出，约束这两个输出尽可能相近，即保证了G的生成图像轮廓和输入图像轮廓相近。<br>另一个约束可以是按重构误差的思路来，如下图：<br><img src="/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/2020-02-06-23-12-26.png" class=""><br>写实风格转梵高风格的对偶模型是梵高风格转写实风格，引入这个对偶模型，对两种图像分别进行重构。这是CycleGAN的做法，但实际上，这种重构不一定有用，因为很明显地两个模型可以合作唱双簧，中间产生的图像不一定是正常的图片。但实际上，这样做出来的效果一般还不错，原因可能是对模型来说，这种映射能力不是无限大的，为了能够重构，中间产生的图像必须轮廓上和输入图像较为接近。</p>
+<p>实际上，有另一个更为惊奇的做法是，不加约束，不管生成器G会直接生成和输入完全无关的图像去骗过分类器D这件事。这在网络深度较浅的时候也可以出效果，原因应该是模型倾向于生成轮廓上变动不大的图片。</p>
+<h4 id="2-projection-to-common-space"><a href="#2-projection-to-common-space" class="headerlink" title="2. projection to common space"></a>2. projection to common space</h4><p>这种想法比第一种想法更直观，直接把两种风格的图像各自完成autoencoder，如下：<br><img src="/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/2020-02-06-23-12-39.png" class=""><br>此时中间获得的图像表示向量v可以看做携带了图像的绝大部分信息，但是，这两个autoencoder获得的v意义是不一样的，例如假设v有3维，对写实风格的图像来说v的三个维度分别表示头发的长度，眼睛大小，脸的大小。但是对于漫画风格的图像来说v的三个维度可能是代表眼睛大小，脸的大小，头发的长度，甚至于说这种差别可以完全不是顺序问题。因此，这两个图像表示空间可能完全是无法对齐的。<br>解决方法：</p>
+<h5 id="2-1-共用参数"><a href="#2-1-共用参数" class="headerlink" title="2.1 共用参数"></a>2.1 共用参数</h5><p>这个问题的一个解决方法是，共用两个autoencoder的参数，尽可能让这两个表示空间v相同，但实际上又不好使用完全相同参数的autoencoder，因此仅仅在encoder的最后几层和decoder的前几层共享参数。或者想要直接整个autoencoder共享参数的话需要在encode的时候顺便输入一个flag，表示此时是编码写实风格的还是漫画风格的图像，然后对应解码，测试的时候只需要将flag颠倒，即可得到风格转换的目标图像。<br><img src="/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/2020-02-06-23-12-53.png" class=""></p>
+<h5 id="2-2-强迫空间对齐"><a href="#2-2-强迫空间对齐" class="headerlink" title="2.2 强迫空间对齐"></a>2.2 强迫空间对齐</h5><p>另一个解决方案是增加一个分类器判断两种autoencoder的中间表示v来自哪个domain。该思路的出发点是既然两个空间是不对齐的，那么可以使用分类器识别出来，然后按照以分类器识别不出来为目标去调整两个autoencoder使得空间对齐。</p>
+<p>题外：<br>有另一个问题是，使用均方差作为重构误差会带来生成的图像较模糊这个问题，很直觉地，按照GAN的思路，该问题可以使用引入分类器D来缓解，如下，其实就是VAE-GAN的思路。<br><img src="/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/2020-02-06-23-13-02.png" class=""></p>
+<h5 id="2-3-Cycle-consistency"><a href="#2-3-Cycle-consistency" class="headerlink" title="2.3 Cycle consistency"></a>2.3 Cycle consistency</h5><p>另一个解决方法依然是利用重构误差，如下：<br><img src="/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/2020-02-06-23-13-13.png" class=""><br>构建的回环是从写实风格的图片1到漫画风格，然后继续将漫画风格转换成写实风格的图片2，图片1和2构成重构约束。其实这整个过程和CycleGAN的做法一直，只不过这里只用了一个重构过程（其实也可以把漫画风格的进行重构）。在CycleGAN中没有显式地画出encoder和decoder的过程，这里的ENx和DEy就构成了CycleGAN中的一个生成函数$G_{x-&gt;y}$，ENy和DEx就构成了CycleGAN中的一个另一个生成函数$G_{y-&gt;x}$。以上就是ComboGAN，和CycleGAN其实是同个东西。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huangmiaoxin.github.io/2020/02/06/%E5%90%84%E5%BC%8F%E5%90%84%E6%A0%B7%E7%9A%84gan-wgan-and-ebgan/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MioKinHuang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MioKinHuang 's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/02/06/%E5%90%84%E5%BC%8F%E5%90%84%E6%A0%B7%E7%9A%84gan-wgan-and-ebgan/" itemprop="url">各式各样的GAN——WGAN，EBGAN</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-06T23:02:44+08:00">
+                2020-02-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%9B%B8%E5%85%B3%E7%90%86%E8%AE%BA/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习相关理论</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>本文是李宏毅老师的公开课的学习记录，全部图片来自李老师的课件。文字按照个人理解做了组织和阐释。主要介绍了几种GAN——WGAN，EBGAN</p>
+<h3 id="1-WGAN"><a href="#1-WGAN" class="headerlink" title="1. WGAN"></a>1. WGAN</h3><h4 id="1-1-JS-divergence-is-not-suitable"><a href="#1-1-JS-divergence-is-not-suitable" class="headerlink" title="1.1 JS divergence is not suitable"></a>1.1 JS divergence is not suitable</h4><p>关于这个问题其实讨论地很多，一个目前被广泛接收的观点是在原始GAN中使用的JS散度的确不够合适，问题在于JS散度在两个分布数据没有重叠时JS散度值是一个固定的数值，如下：<br><img src="/2020/02/06/%E5%90%84%E5%BC%8F%E5%90%84%E6%A0%B7%E7%9A%84gan-wgan-and-ebgan/2020-02-06-23-04-26.png" class=""><br>不管生成数据已经有多接近真实分布，只要没有重叠，JS散度都不会有反应。因此当生成数据在相比之前更接近真实数据了，但是JS散度依然没有给更好的数值，这显然对模型参数的引导作用不够。这个问题其实可以直观地感受到，因为：我们使用最优分类器来判断两个分布的接近程度，当两个分布不重叠时，都可以容易地区分开，因此这种情况下分布的接近程度是一样的，都是不接近。</p>
+<p>关于这个问题，较普遍的两种解释如下：<br><img src="/2020/02/06/%E5%90%84%E5%BC%8F%E5%90%84%E6%A0%B7%E7%9A%84gan-wgan-and-ebgan/2020-02-06-23-04-36.png" class=""><br>第一种解释认为，一个M*N大小的图像其实不是MN维的数据，而是MN维空间中的一个低维manifold，大体意思是图像数据只需要很小的维度就能直接描述。在MN维空间中，生成数据和真实数据的真实维度很低，因此可能很难有重叠。例如图中的两个直线，重叠部分是两个点，几乎可以忽略不计。<br>第二种解释认为，就算两个数据分布有部分重叠，但是平常我们采样的数据毕竟不是完全充分的，因此就算有极少的重叠，对于最优分类器来说，依然可以视为毫无重叠。如图中可以直接找到一个分类平面将两种采样数据分隔开，虽然对于理想分布来说这两种数据其实已经有少数的数据点重叠了。</p>
+<h4 id="1-2-Least-Square-GAN"><a href="#1-2-Least-Square-GAN" class="headerlink" title="1.2 Least Square GAN"></a>1.2 Least Square GAN</h4><p>原始的GAN另一个问题是，由于使用了sigmoid函数作为分类的激活函数，生成数据可能较难朝着真实数据的方向趋近。因为sigmoid函数在两端的斜率较小，导致梯度计算的结果很小。一个可能的解决方案是不使用sigmoid函数，直接使用线性的激活函数。<br><img src="/2020/02/06/%E5%90%84%E5%BC%8F%E5%90%84%E6%A0%B7%E7%9A%84gan-wgan-and-ebgan/2020-02-06-23-04-52.png" class=""></p>
+<h4 id="1-3-Wasserstein-GAN"><a href="#1-3-Wasserstein-GAN" class="headerlink" title="1.3 Wasserstein GAN"></a>1.3 Wasserstein GAN</h4><p>上面说明了，原始的GAN使用的JS散度不利于模型收敛。本质在于JS散度衡量两个分布的距离的时候不够合理。改进的思路可以是换用其他一些较好的距离衡量方式像Wasserstein距离，该距离计算方式可以在两个分布不重叠时也能反映分布的距离。<br><img src="/2020/02/06/%E5%90%84%E5%BC%8F%E5%90%84%E6%A0%B7%E7%9A%84gan-wgan-and-ebgan/2020-02-06-23-05-03.png" class=""><br>Wasserstein距离通俗上也称为推土距离。直观上就是把一堆土的形状修整成另一堆土的形状时所需要搬动的最少的土量。如何解这个最优的搬土量也是一个重点。这种距离计算方式有好处：两个分布之间的接近程度应该是渐变的，推土距离也是渐变的（JS散度是突变的），因此推土距离用来描述两个分布之间的接近程度更为合理。</p>
+<p>插话：<br>关于这种渐变的距离描述方式为什么好其实很容易理解，不需要举例。不过在课程中李宏毅老师给了一个很有意思的例子，也放过来。如下：<br><img src="/2020/02/06/%E5%90%84%E5%BC%8F%E5%90%84%E6%A0%B7%E7%9A%84gan-wgan-and-ebgan/2020-02-06-23-05-16.png" class=""><br>生物进化出眼睛的过程是渐进的，通过多种微小的累积最终产生了眼睛，并非突然产生。首先在皮肤上突变产生了一些能感光的细胞，后来又产生了凹陷的形状，由于凹陷的个体能接受各个方向的光线并判断光源，可能在后续的一些环境竞争中被选择出来，属于有利突变。再后来，由于凹陷容易聚集灰尘，因此突变产生睫毛和包裹外皮的性状又被选择了出来，最终一步步进化成了现在看到的器官眼睛。在这个过程中，需要有多种突变，并且需要环境有一套筛选标准以知道哪种突变是有利的，鼓励它被保留下来。类比到GAN中，原始的JS散度在两个分布没有重叠的时候给出的判断值不变，因此在还没有重叠的时候尽管生成分布更加靠近真实分布了但分类器根本无法判别，最终导致收敛困难。</p>
+<p>有了Wasserstein距离，可以考虑把这个度量方式应用到GAN中，实际的推导过程很复杂，最终的结果如下：<br><img src="/2020/02/06/%E5%90%84%E5%BC%8F%E5%90%84%E6%A0%B7%E7%9A%84gan-wgan-and-ebgan/2020-02-06-23-05-28.png" class=""><br>公式如下：</p>
+<script type="math/tex; mode=display">
+V(G, D) = \mathop{\max}_{D \in 1-Lopschitz}\{E_{x \sim P_{data}}[D(x)] - E_{x \sim P_G}[D(x)]\}</script><p>公式表明了分类器D的优化目标是使得生成数据在分类器中得分最低，真实数据在分类器中得分最高，这本来没什么问题，但公式有约束条件，即分类器D的函数必须满足一阶的利普希茨条件。该条件的定义如上图，可能可以利用中值定理，转换成该函数在区间$[x_1, x_2]$上导数值绝对值小于等于$K(K\text{此时等于}1)$，很明显意思就是函数在该区间内需要尽可能“平滑”，不能太陡峭。<br>现在的问题转化成如何在带一阶利普希茨条件这样一个全局约束的情况下找到优化器D的参数。这其实不好做，因为对梯度下降法来说难以加入这种约束。在原始的WGAN论文中其实也没有解这个问题，原始的论文直接将这个条件弱化成梯度裁剪，希望通过把模型参数$w$约束在$[-c, c]$中，迫使模型代表的函数足够平滑。这显然不是等价处理，但从提出Wasserstein距离来解决原始GAN训练的问题并且给出了初级的解法这一点来看，这个工作的贡献依然非常大。</p>
+<h4 id="1-4-improved-WGAN"><a href="#1-4-improved-WGAN" class="headerlink" title="1.4 improved WGAN"></a>1.4 improved WGAN</h4><p>后续有paper提出了别的解法，如下：<br><img src="/2020/02/06/%E5%90%84%E5%BC%8F%E5%90%84%E6%A0%B7%E7%9A%84gan-wgan-and-ebgan/2020-02-06-23-06-22.png" class=""><br>一阶利普希茨条件数学上完全等价于在区间$[x_1, x_2]$上所有的导数值绝对值小于等于$K(K\text{此时等于}1)$，具体到该问题场景，此处的有效区间是所有数据样本，因此问题转化成对于所有的数据样本，分类函数D的梯度值的大小都小于等于1，因此可以按照这个转换来设计正则项，如图中所示，使用分类函数D梯度值超过1的部分来量化地代表数据x不符合一阶利普希茨条件的程度，对所有不符合一阶利普希茨条件的数据x加和获得惩罚项。但实际上难以采样获得所有的数据样本x，因此只能将该条件稍微弱化一下，转化为在某个划定的数据集合$P_{penalty}$上计算该惩罚项，同样如上图所示。</p>
+<p>关于数据集合$P_{penalty}$的获取，论文中给出的思路如下：<br><img src="/2020/02/06/%E5%90%84%E5%BC%8F%E5%90%84%E6%A0%B7%E7%9A%84gan-wgan-and-ebgan/2020-02-06-23-06-37.png" class=""><br>集合$P_{penalty}$的数据点是在生成数据点和真实数据点两个采样点的连线中采样获得。所以集合$P_{penalty}$是在真实分布和生成分布之间，这是较为符合直觉的，$P_{G}$在朝着$P_{data}$趋近的路上的这些数据点必须符合约束条件，其余空间中的点不需要考虑因为分类函数D并不会接收这些点。</p>
+<h4 id="1-5-algorithm-pseudo-code"><a href="#1-5-algorithm-pseudo-code" class="headerlink" title="1.5 algorithm pseudo code"></a>1.5 algorithm pseudo code</h4><p>原始的GAN和WGAN的代码流程对比如下：<br><img src="/2020/02/06/%E5%90%84%E5%BC%8F%E5%90%84%E6%A0%B7%E7%9A%84gan-wgan-and-ebgan/2020-02-06-23-06-50.png" class=""><br><img src="/2020/02/06/%E5%90%84%E5%BC%8F%E5%90%84%E6%A0%B7%E7%9A%84gan-wgan-and-ebgan/2020-02-06-23-06-59.png" class=""><br>从代码层面来看，其实改动很小。</p>
+<h3 id="2-EB-GAN-energy-based-GAN"><a href="#2-EB-GAN-energy-based-GAN" class="headerlink" title="2. EB GAN(energy-based GAN)"></a>2. EB GAN(energy-based GAN)</h3><p>在一般的GAN中，获得最优分类器需要通过训练得到，并且最优分类器需要在生成器的进化中跟着不断进化。在启动阶段，生成器非常弱，产生的图像都是噪声，这种情况下很容易获得一个最优分类器，但其实这时候的分类器很弱。又在这个很弱的分类器D的基础上去提升生成器其实也提升不多。这是GAN训练困难的一个原因。突破这个困境的一个思路是有其实阶段G或者D有较好的能力。</p>
+<p>EB-GAN为分类器D设计了特别的机制使得分类器可以被简单地预训练，因此起步阶段分类器D一般已经有了较好的能力，可以加快后续的训练过程。EB-GAN的分类器设计如下：<br><img src="/2020/02/06/%E5%90%84%E5%BC%8F%E5%90%84%E6%A0%B7%E7%9A%84gan-wgan-and-ebgan/2020-02-06-23-07-11.png" class=""><br>EB-GAN的分类器基于autoencoder，将生成图片使用autoencoder进行重构，计算重构误差，使用重构误差的相反数最为判断真假的打分。这种做法基于一个假设，即图片如果是真实的，那么autoencoder应该可以重构地较好，反之不能。这个假设其实也有一定的道理。在这里，autoencoder可以被较好地预训，因此分类器D一开始就有了较好的能力，有助于后续的训练。</p>
+<p>EB-GAN中分类器D的打分是重构误差的相反数，因此上界是0，下界是无穷大。如果直接地最小化生成样本的分数，最大化真实样本的分数，则两类loss的数量级相差太多，模型完全可以不管真样本的loss，直接输出一些噪声，此时假样本的loss会很小，假样本loss减小的幅度超过真样本增加的幅度即可，模型完全失去能力。在EB-GAN中，对于假样本需要限制loss的数量级，方法是使用margin loss，即假样本的得分只要小于某个设定的数值m即可，不需要最小化成无穷小。如下图：<br><img src="/2020/02/06/%E5%90%84%E5%BC%8F%E5%90%84%E6%A0%B7%E7%9A%84gan-wgan-and-ebgan/2020-02-06-23-07-23.png" class=""></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MioKinHuang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MioKinHuang 's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/" itemprop="url">生成对抗网络（GAN）和Conditional GAN</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-06T22:44:02+08:00">
+                2020-02-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%9B%B8%E5%85%B3%E7%90%86%E8%AE%BA/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习相关理论</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>本文是李宏毅老师的公开课的学习记录，本节主要介绍的是生成对抗网络（GAN）和带条件的GAN。笔记的全部图片来自李老师的课件。文字按照个人理解做了组织和阐释。</p>
+<h3 id="1-introduction"><a href="#1-introduction" class="headerlink" title="1. introduction"></a>1. introduction</h3><p>生成器+判别器（Generator+Discriminator）<br>Generator<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-46-44.png" class=""><br>原始paper中使用深度网络作为生成器，输入一个随机向量z，输出图像。</p>
+<p>Discriminator<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-46-56.png" class=""><br>判别器依然使用深度网络学习一个函数映射关系，输入一个图片，输出一个标量，表示这个图像接近真实图像的程度。</p>
+<img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-47-07.png" class="">
+<p>伪代码比较易懂，将G和D交替更新。例如，先固定G，训练D使得其分辨真实样本和生成样本，然后固定D，训练G使得其输出的样本在D上获得高分。</p>
+<p>实际上可以要获得这样的生成器，一个更容易的，直观的想法是直接使用auto-encoder，训练模型完成图像的重构，即可获得图像的中间向量表示和一个decoder，作为G。但实际上，这样获得的向量表示空间非常不连续，如下图：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-47-18.png" class=""><br>训练好的decoder在左倾斜的数字1和右倾斜的数字1之间的空间是未训练过的，因此无法在这两个表示向量之间进行插值去获得正的数字1，所以这个decoder其实并不好。一个很容易想到的改进是使用VAE，如下：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-47-27.png" class=""><br>使用VAE获得的decoder效果要好很多。</p>
+<p>VAE做出来的decoder和GAN获得的G相比：GAN可以视为是结构化学习的方法。使用G产生样本，然后按照D的判断决定样本的质量。而在VAE中，算是使用G产生样本，然后计算样本的重构误差，误差一般使用像素的均方差，但实际上图像的质量并不是由均方差来决定。因为无法将误差理想化地训练为0，所以最终网络必须进行妥协，把误差分摊到多个像素上，但人类实际上不关心每个像素的质量，更关注画面总体的质量，例如产生人脸时，局部的部分如眼睛鼻子等的边缘不能模糊，人脸总体必须分布协调等。因此使用均方差并不合适。但是采用何种误差方法很难言明，干脆直接使用网络来决定，该网络称为D，把生成样本和真实样本都作为判别器的输入，假样本判断为0，真实样本判断为1。 从结构化学习的角度来看这个问题，如下图：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-47-41.png" class=""><br>均方差的损失函数产生的结果会顾及组成图像的某些部件，例如图中数字2的不同部位（上方的弯曲，下方的横线等部件），但是部件之间的组合没有十分合理，例如左边的的数字2，右下方有一个像素游离于数字2这个主体之外，实际上，对于普通的生成器和像素均方差损失函数，很容易出现这种问题，因为生成器生成不同像素的时候没有大局视野，生成不同像素的神经元之间没有配合好。而对于GAN来说，引入了D，输入的是一整个生成样本，优化这个画面数据使其接近真实图像，可以使得D具有大局观，产生结构搭配上更合理的图像。<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-47-50.png" class=""></p>
+<p>G在生成数字2的各个部件时，可能很难考虑多个部件之间的结构关系，但是当生成了完整的数字2之后，D只需要检查一下结构关系是否合理，这是一件较直观的事情。</p>
+<p>从结果上来看，VAE产生的效果确实相较于GAN更差一些。<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-48-01.png" class=""><br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-48-09.png" class=""><br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-48-16.png" class=""><br>对比人脸，使用VAE获得的人脸在边缘细节上较为模糊，相比之下GAN更具有全局观。但是VAE也有自身的优点，从第一个统计图可以看出，VAE产生的样本数据质量比较均匀（虽然模糊），GAN产生的数据质量差距较大，但最好的数据的质量明显高过VAE。从数据点分布来看，第一个图的蓝色点是真实样本点，红色是GAN产生的样本点，基本逼近了真实样本点的分布情况。第二个图的绿色点是真实样本点，蓝色是VAE产生的样本点，总体效果还可以，但是不够精准。</p>
+<p>思考：<br>假设可以解下面的方程：</p>
+<script type="math/tex; mode=display">
+x = \text{argmax}_{x} (D(x))</script><p>那么是否能不使用生成器，直接用真实样本来训练一个判别器。<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-48-28.png" class=""><br>对于一个训练到一半的D，可以随机采样一些数据，看D的打分，记录分数高的图像，视为假样本，继续训练D，重复以上过程。<br>但实际上，因为高维空间非常广阔，要解argmax方程极度困难。<br>从这个角度来看，生成器其实在尝试做argmax的工作，如下图：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-48-38.png" class=""></p>
+<p>总结：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-48-48.png" class=""><br>GAN使用深度网络来代替以往的人工定义的损失函数，在图像问题上摒弃了像素均方差的方法，可以获得更加真实的图像。从结构化学习的角度看，原先的均方差方式没有办法考虑成图的组件之间的结构联系，不符合真实图像的规律，而D可以直接输入整个图像，发掘图像与真实图像的差别，进而调节生成器G。</p>
+<p>从拟合数据分布的角度来看，GAN的过程直观展示如下图：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-49-20.png" class=""><br>为了直观，将图像数据视为1维，绿色部分是真实数据分布。<br>一开始生成器G产生的数据分布和真实分布并不一致。通过采样G的数据和真实样本数据，使用D的判断，告诉G这部分生成数据的概率应该增大或者减小，从而改变G产生的数据的分布。当最终达到平衡时，G产生的数据分布逼近了真实分布。</p>
+<h3 id="2-推导"><a href="#2-推导" class="headerlink" title="2. 推导"></a>2. 推导</h3><h4 id="极大似然和KL散度"><a href="#极大似然和KL散度" class="headerlink" title="极大似然和KL散度"></a>极大似然和KL散度</h4><p>首先回顾生成模型在做的事情：寻找数据的分布。详细一点来说，如下图：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-49-35.png" class=""><br>按照已知的$P_{data}(x)$，采样获得$x_1, x_2, …, x_m$，构成数据集X。要拟合真实分布$P_{data}$，等价于拟合数据集X。首先预定某一个分布，参数为$\theta$，从中采样数据$P_G(x;\theta)$，按照极大似然的思想，假如参数$\theta$的分布拟合了真实数据$P_{data}(x)$，则从参数$\theta$ 的分布中采样m个数据等于数据集X的概率应该最大，据此获得目标函数：</p>
+<script type="math/tex; mode=display">
+\prod_{i=1}^m P_G(x_i, \theta)</script><p>上述公式总体上看是在求取真实分布$P_{data}$和生成分布$P_G$的差距，具体的计算细节是化为求真实数据$x_i$和生成数据$x \sim P_G(x;\theta)$的交叉熵。<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-50-05.png" class=""><br>而实际上，由于该过程中$P_{data}$和参数$\theta$无关，因此可以将$P_{data}$的信息熵加到交叉熵中，构成相对熵(KL散度)。<br>综上，生成模型的损失函数实际上是在求取生成分布和真实分布之间的KL散度。</p>
+<h4 id="GAN中衡量两个分布的差距"><a href="#GAN中衡量两个分布的差距" class="headerlink" title="GAN中衡量两个分布的差距"></a>GAN中衡量两个分布的差距</h4><p>公式\ref{mle_gen}中的参数为$\theta$的分布可能非常复杂，难以定义。但实际上一个复杂分布可以使用一个标准正态分布后接一个深度网络来近似，此处的深度网络能把标准正态分布采样获得的向量任意变换成为一个复杂分布采样获得的向量，实际上是把标准正态分布“扭曲”成为任意分布。此时上述目标函数中的参数$\theta$实际上包含了标准正态分布的参数和深度神经网络的参数，不过标准正态分布的参数已知因此参数$\theta$实际上是深度网络的参数。如下：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-50-14.png" class=""></p>
+<p>此处，GAN不是直接计算$P_G$和$P_{data}$之间的某种接近程度（散度）。而是直接利用一个深度网络来判断这种“差距”，如下：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-50-22.png" class=""><br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-50-29.png" class=""></p>
+<p>直观上来说，我们希望生成分布和真实分布非常接近，但是现在暂时先不使用散度的做法来计算这种接近程度，而是考虑使用一个分类器D来间接完成这种“散度”计算。可以直观地想象，假如高维空间中两个数据分布之间的距离较大，则可以很容易地找到一个超平面将这两类数据分隔开，而如果两个数据分布之间的间隙很小，几乎是同一个分布，则难以使用超平面将数据分开。鉴于此，目标转化为寻找参数$\theta$（也就是生成网络G）使得一个分类能力极强的分类器D无法分类生成数据和真实数据（此时要求D分类能力极强，因此在该场景下需要使用生成数据不断训练D使其分类能力提升，能分类生成数据和真实数据）。</p>
+<p>根据以上分析，G和D都是一个函数，我们的目标是寻找一个生成函数G使得分类函数D无法分类生成数据和真实数据。<br>按照二分类的目标函数：</p>
+<script type="math/tex; mode=display">
+L(D) = P_{data}(x)log D(x) + P_G(x) log(1-D(x))</script><p>首先最大化$L(D)$，即寻找D使得分类效果最大，此处D是一个函数，随着真实数据$P_{data}$和生成数据$P_G$的不同取不同的最优分类解，因此，D与且仅与$P_{data}$和$P_G$有关。按照泛函求导，如下：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-50-54.png" class=""><br>首先确定D，相当于不管生成函数G产生何种数据分布，都能直接按照公式$D(x) = \frac{P_{data}(x)}{P_{data}(x)+P_G(x)}$获得最优的分类器D，D已经和G直接挂钩，可以忽略了，只考虑G的取值问题（这里假设函数D能直接一步到位寻找到最优解，这是一个很强的假设，但实际操作的时候，这一步寻找最优的D需要靠G产生的数据和真实数据训练得到的，未必能逼近此时数学计算中理想的最优D），将D替换成G，此时问题转化如下：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-51-06.png" class=""><br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-51-16.png" class=""></p>
+<p>从实际操作来说，这一步需要使用生成函数G产生数据进行模型G的训练。前面说了，最优分类器D也需要使用生成数据和真实数据进行训练，从这里也可以看出，GAN的过程可以是生成函数G和分类函数D交替训练的过程。</p>
+<p>从最终结果可以看到，最终GAN等价于计算某种散度（此处是JS散度），毕竟需要衡量两个分布之间的差距。前面按照直觉分析了计算分布差距可以转化为二分类问题，以上过程从数学的角度说明了，生成数据和真实数据的二分类在这个问题场景本质上是在逼近JS散度。</p>
+<p>从一开始的分析中我们得到，生成模型需要寻找一个生成函数G使得$P_G$和$P_{data}$接近，即：</p>
+<script type="math/tex; mode=display">
+G = \mathop{\arg\min}_{G} \ \ div(P_G, P_{data})</script><p>后来又将$div(P_G, P_{data})$转化成使用生成函数D来衡量$P_G$$P_{data}$的可分程度，此处的D必须是当前最优分类器，即：</p>
+<script type="math/tex; mode=display">
+div(P_G, P_{data}) = \mathop{\arg \max}_{D} \ \ V(D, G) = \mathop{\arg \max}_{D} \ \ P_{data}(x)logD(x) + P_G(x)(1-log D(x))</script><p>因此，综合上面两个式子，我们其实是在求解：</p>
+<script type="math/tex; mode=display">
+G = \mathop{\arg \min}_{G} \ \ \mathop{\arg \max}_{D} \ \ V(G, D)</script><p>下面看一个简单的具体例子：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-52-17.png" class=""><br>假设目前的G函数只有三个，分别是G1，G2和G3。D函数有无穷多个，排列在x轴。则分别针对3个生成函数，寻找V(D,G)的最高分，然后选中这三个最高分中的最小值对应的生成函数G，即是G3作为求解结果。这里也可以看到一个明显的博弈过程，D要在3个G的场景下表现最好，即最优分类，而G的生成能力要最强，就要在3个D最优分类的基础上找最差分类，表明最优分类的D都能难区分G的生成结果。</p>
+<p>算法的实做过程：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-52-29.png" class=""><br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-52-40.png" class=""><br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-52-56.png" class=""><br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-53-05.png" class=""></p>
+<p>总结一下：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-53-34.png" class=""></p>
+<h3 id="3-Conditional-GAN"><a href="#3-Conditional-GAN" class="headerlink" title="3. Conditional GAN"></a>3. Conditional GAN</h3><p>原始的GAN虽然可以作为生成能力很强的生成模型使用，但由于输入是随机噪声，生成的结果可能不是我们预期要的效果，总体看并不可控。考虑在此基础上增加一个限制条件作为约束。例如不再随机产生图片，而是输入文字产生对应画面的图片。<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-53-53.png" class=""><br>这个任务有点像图片字幕的对偶任务，一直最直接的思路是，使用文字和图片构成的数据集，端到端有监督地训练一个文字到图片的映射关系。但这么做是不够的，例如带有火车这个单词的样本很多，对应的标签中火车可能是不同的角度，因此最终得到的文字到图片的映射网络为了拟合总体的误差，会将火车输出为多种角度的平均角度，即一个模糊的火车。因此传统方法不适用。</p>
+<p>可以在原始GAN的基础上改进，设计带（约束）条件的GAN，如下：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-54-04.png" class=""><br>很明显地，生成函数不仅仅输入一个随机分布向量，也需要输入文字描述的语义向量，但是此时产生的图片作为假样本，真实图片作为真样本，最终会变成G只产生像真实图片的图片，不管图片和输入的描述文本是否匹配。所以，分类器D还需要知道生成函数G一开始接收的文字描述信息，因此输入应当包括文本和图片两项。真样本当然是文本加匹配的真图片，假样本是文本加假图片，此处假图片必须是不匹配的真图片和生成器生成的图片两者皆有。如果不加入不匹配的真图片，生成器G依然可以通过产生和文字描述无关的逼真图片，并且分类器D忽视文字输入而最终达到GD均衡，因此此处的假样本必须有文字加不匹配的真实图片。</p>
+<p>下面是伪代码描述，总体过程相比原始的GAN多了文本输入和多一种假样本，其余不变。<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-54-16.png" class=""></p>
+<p>至此，CGAN的网络架构和原始的GAN一致，区别仅在输入端和假样本。有一些文献设计了不同的架构，如下：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-54-25.png" class=""><br>出发点应该是生成器G产生符合要求的样本可以分两步走，一个是产生的图首先必须逼真，然后再是和文字描述足够匹配。于是可以将生成器产生的图片分两个分支，一个约束逼真程度，一个约束匹配程度。其中，约束逼真程度的D可以和原始GAN一样直接分类图片就好，约束匹配程度的D，真样本是文字和匹配的真图，假样本是文字和生成图片，应该也还需要文字+不匹配的真图？总结来说这种架构的好处是利用分支任务监督生成真图，图片逼真的话loss开始减小，可能一定程度上缓解了原始的CGAN在生成文字+不匹配的真图时loss依然很高的问题。</p>
+<p>例子：<br>如下图<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-54-34.png" class=""><br>指定建筑物的大致外观作为约束条件，要求将产生外观相近的带有细节的建筑物图片。<br>按照condition GAN的做法直接训练，但是产生的建筑物可能带有部分细节不太真实，例如最下方的第三个图中左上角有烟囱图形，考虑在condition GAN的原始loss上增加一个普通的图像均方差（当然，需要有平行数据），最终效果改善明显。另一个实做遇到的问题是，产生的图片尺寸较大，模型参数多，收敛时间长或者难以收敛，因为此时模型可能有办法产生细节上合理的图片但是整体构图有问题，此时仍然得不到好的反馈，因此引入分层的想法，即使用小的判别器判断局部细节是否足够真实，大的判别器判断整体构图是否和谐，如下：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-54-44.png" class=""></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huangmiaoxin.github.io/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MioKinHuang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MioKinHuang 's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/" itemprop="url">各样各式的GAN——infoGAN, VAE-GAN, BiGAN</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-06T22:34:11+08:00">
+                2020-02-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%9B%B8%E5%85%B3%E7%90%86%E8%AE%BA/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习相关理论</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>本文是李宏毅老师的公开课的学习记录，全部图片来自李老师的课件。文字按照个人理解做了组织和阐释。主要介绍了几种GAN——infoGAN, VAE-GAN, BiGAN。</p>
+<h3 id="infoGAN"><a href="#infoGAN" class="headerlink" title="infoGAN"></a>infoGAN</h3><p>普通的GAN中，生成函数G的输入是一个随机向量，输出是一个图片（例如手写数字）。实践中发现，这个随机向量的维度没有实际物理含义：线性地改变向量的某个维度的数值，然后输入到生成函数G，获得的图片并没有呈现出某个物理层面的渐变效果，例如笔画的粗细，数字的倾斜程度等等。如下：<br><img src="/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-37-41.png" class=""><br>这个问题的一个可能的解释是：从人自身的角度出发，我们认可笔画的粗细，数字的倾斜程度，颜色等作为特征，渐进地改变某个维度的数值时，就像图中右下角的坐标一样，会经历颜色属性的改变，但对于生成函数来说，它认为的特征可能是另一种人类不熟悉的属性，当渐进地改变这种属性时，转换为图片之后人看到的特征就像是多类特征的杂合，甚至没有规律。<br>如果能解决这个问题，将使得生成模型的效果较为可控，infoGAN就是为了解决这个问题被提出的。如下：<br><img src="/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-37-50.png" class=""><br>在普通GAN的基础上做出的改动是：输入的向量拼接多一项c，同时增加一个分类器，从生成的图片中将c重新解析出来。为了避免生成函数G直接把c的信息明显地放在生成图片中，因此必须保证生成图片是正常的，故不能拆掉分类器D。</p>
+<p>infoGAN这种做法的出发点是，如果在输入端额外增加了某种信息c，而这种信息没有被分类器D发现，同时解析器C还能从图片中解析出信息c（假如解析器C的脑补能力并没有很强），那么这种信息只能来自于图片的内容，因此这种做法会强迫信息c去影响图像的内容中，通过内容将信息传递给解析器C，这种影响可能就是通过影响一些属性（笔画粗细等）达成的，因此此时的向量c有可能具备渐进地控制生成图像内容的能力。以上要求解析网络C的能力不能太强，因为如果解析网络C的能力很强，可能C和G会合作找到一种接头暗号，将信息c简单地放在图像的某个小区域，同时骗过分类器D的底层参数，使其发现不了（可能信息c藏得很散乱或者是很微弱，D发现不了但是C的能力很强可以解析出来）。因此需要想办法限制一下C网络的能力，结合这个场景，一个较好的方法是让解析网络C和分类器D尽可能多地共享参数，另外地，C和D都是接收生成图像，因此它们的底层网络本来也应该是一样的。</p>
+<p>效果：<br><img src="/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-38-09.png" class=""><br>从第一张图的结果看，信息c的第一维控制数字；从第三张图看，第二维度控制倾斜角度；从第三张图看，第三维度控制笔画的粗细。</p>
+<h3 id="VAE-GAN"><a href="#VAE-GAN" class="headerlink" title="VAE-GAN"></a>VAE-GAN</h3><p>顾名思义，将VAE和GAN结合起来。这种做法的出发点是原始VAE应用在图像中是使用像素均方差作为loss函数，这种做法生成的图像往往很模糊，因此考虑引入GAN做改进。此时，VAE的decoder作为生成函数G，后接一个分类器D，总体结构如下：<br><img src="/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-38-24.png" class=""><br>需要注意的是这里不仅仅把autoencoder重构出来的图像x作为假样本，还需要使用随机的向量输入decoder解码获得的图像作为假样本。真样本就只有真实图片这一种。<br>算法流程如下，第五个小点中$\hat{x^i} = En(z^i)$改为$\hat{x^i} = De(z^i)$，其余没有什么需要补充的。<br><img src="/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-38-33.png" class=""></p>
+<h3 id="BiGAN（Bidirectional-GAN）"><a href="#BiGAN（Bidirectional-GAN）" class="headerlink" title="BiGAN（Bidirectional GAN）"></a>BiGAN（Bidirectional GAN）</h3><p>BiGAN是另一种改进思路。分开学一个encoder和decoder，和autoencoder中的encoder和decoder的作用相同，encoder吃一个图片，获得一个编码向量z，decoder吃一个编码向量z（随机产生），获得一个图片。整个过程看起来和autoencoder很相似，唯一的不同是encoder输出的z并不会直接输入到decoder中，所以在这一点上encoder和decoder并没有什么联系，而是通过另一个分类器D来建立联系。如下图：<br><img src="/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-38-43.png" class=""><br>分类器D在这里需要分开的对象是encoder的输入输出构成的整体和decoder的输入输出构成的整体。训练的最终目的当然就是让分类器D分不开，这时候encoder的输入输出和decoder的输出输入可以认为是接近的，这时再把encoder和decoder拼接起来作后续的使用。</p>
+<p>按照李宏毅老师的理解，这种做法和直接做autoencoder在达到最优解的情况下是一样的，但其实无法达到最优解，因此两种做法最终的结果有不同。如下：<br><img src="/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-38-56.png" class=""><br>我想其实可以从GAN对图像清晰程度的提升这一点来分析，普通autoencoder对图像的重构使用像素均方差，将decoder单独拿出来使用会出现生成图像模糊的问题，BiGAN中分类器最终的目标是分不清真实encoder和decoder的输入和输出，可能可以推导到分不清真实图像和生成图像，这会提升decoder的生成图像质量。<br>实践中BiGAN的效果的部分示意图如下：<br><img src="/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-39-40.png" class=""><img src="/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-39-07.png" class=""><img src="/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-39-58.png" class=""><br>和普通autoencoder得到模糊的图像不同，BiGAN得到的图像纹理比较清晰，但是整体看起来不太像真实图片==。另外，BiGAN的结果有一个特点是，例如输入一个鸟的图片，重构结果也是类似鸟的图片但角度各方面都不会和原图一致。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huangmiaoxin.github.io/2020/02/06/%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MioKinHuang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MioKinHuang 's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/02/06/%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B/" itemprop="url">遣词造句的规律，人类语言的奥秘——语言模型</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-06T22:10:32+08:00">
+                2020-02-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index">
+                    <span itemprop="name">其他</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h3><p>普遍意义上的自然语言处理中的语言是指人类之间沟通交流的工具，具体形式上可以有文本和语音等多种表现形式。语言携带信息的方式随着人类群体的的不断进化和发展而逐渐变得丰富，同时也变得极为复杂，以至于到了近现代社会人类自身都很难概括出理解文本语义信息需要经历的逻辑变换过程。加上现代计算机体系和人脑运作体系的差别较大，人类难以将自身对语言的理解过程直接转化为计算机程式，因此演化出了自然语言处理这个计算机科学的子领域。自然语言处理的主要目的是通过统计学习的方法使计算机能接收和处理文本，从中提取出文本表达的信息。其中，语言模型是自然语言处理的基础。本文将介绍语言模型的相关理论和一些重要工作。</p>
+<h3 id="语言模型定义与求解"><a href="#语言模型定义与求解" class="headerlink" title="语言模型定义与求解"></a>语言模型定义与求解</h3><p>一个句子S通常被看作由一系列词语元素$w_i$构成的有序序列，即$S=w_1w_2w_3…w_N$。语言模型认为某种语言体系下的所有句子构成一个概率分布，每个句子对应的概率$p(S)$表示该句子的出现概率。<br>语言模型的基本任务就是估计每个句子的出现概率，如公式\eqref{eq:lm_ps}所示：</p>
+<script type="math/tex; mode=display">
+P(S) = P(w_1w_2w_3...w_N)</script><p>利用条件概率，可以将公式转换如下：</p>
+<script type="math/tex; mode=display">
+P(w_1w_2w_3...w_N) = P(w_1)P(w_2|w_1)P(w_3|w_1w_2)…P(w_N|w_1w_2w_3…w_{N-1})</script><p>因此，根据该公式，要估计一个句子$S$的出现概率，只需要预先在一个大型语料库中，分别统计出条件概率$P(w_i|w_1w_2w_3…w_{i-1})$，再将所有结果累乘即可。该过程利用了伯努利大数定理（当频次<strong>足够高</strong>时，频率趋近于概率），如下面公式所示：</p>
+<script type="math/tex; mode=display">
+P(w_i|w_1w_2w_3…w_{i-1})\approx \frac{\text{Count}(w_1w_2w_3…w_{i-1}w_i)}{\text{Count}(w_1w_2w_3…w_{i-1})}</script><p>在实际操作中，当$i$较大时，句子$S$的前$i$个元素构成的前缀子序列$S_i=w_1w_2w_3…w_{i-1}w_i$往往非常稀疏，导致大数定理失效，因此很难直接使用公式\eqref{eq:lm_pwi}估计条件概率$P(w_i|w_1w_2w_3…w_{i-1})$。Jelinek<sup><a href="#fn_Jelinek1980interpolated" id="reffn_Jelinek1980interpolated">Jelinek1980interpolated</a></sup>提出一种近似算法。基于Markov假设，即子序列$w_1w_2w_3…w_{i-1}w_i$中，$w_i$元素只依赖于前$k$个元素，故公式\eqref{eq:lm_pwi}可以改写为：</p>
+<script type="math/tex; mode=display">
+P(w_i|w_1w_2w_3…w_{i-1}) = P(w_i|w_{i-k}…w_{i-2}w_{i-1})\approx \frac{\text{Count}(w_{i-k}…w_{i-2}w_{i-1}w_i)}{\text{Count}(w_{i-k}…w_{i-2}w_{i-1})}</script><p>一般情况下，$k$取值定为2。利用上面的公式进行语料库统计不仅可以解决子序列前缀子序列$S_i$稀疏的问题，较短序列的匹配也使得统计过程的计算量大大降低。</p>
+<h3 id="神经语言模型"><a href="#神经语言模型" class="headerlink" title="神经语言模型"></a>神经语言模型</h3><p>传统的统计语言模型使用上面最后一个公式所示的方法进行求解。该方法在大多数任务场景下表现良好，但是当给定的句子中某些序列片段未在语料库出现或者出现次数较少时，针对该部分的条件概率估计将会出现较大偏差。过去的研究工作设计了多种平滑方法<sup><a href="#fn_katz1987estimation" id="reffn_katz1987estimation">katz1987estimation</a></sup>来针对统计频数较少的序列片段进行平滑修正，但通过人工规则定义的平滑算法有较大的适用局限。同时，由于统计语言模型基于Markov假设，这导致模型只关注目标元素之前的若干元素，无法和更多的元素建立长时依赖关系。为了解决上述问题，Mikolov等人<sup><a href="#fn_mikolov2010recurrent" id="reffn_mikolov2010recurrent">mikolov2010recurrent</a></sup>提出了基于循环神经网络的语言模型RNNLM。其模型结构示意图如下图所示：<br><img src="/2020/02/06/%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B/2020-02-06-22-28-02.png" class=""><br>RNNLM将<strong>循环神经网络作为一个在设定误差之内能拟合任意连续函数<sup><a href="#fn_nn_as_func_appro" id="reffn_nn_as_func_appro">nn_as_func_appro</a></sup>的工具</strong>，用来端到端地学习一个<strong>从前缀子序列$S_{i-1}=w_1w_2w_3…w_{i-1}$到条件概率$P(w_i|w_1w_2w_3…w_{i-1})$的映射关系</strong>。下面以LSTM为例阐述神经语言模型的数学描述，如下两个公式所示：</p>
+<script type="math/tex; mode=display">
+h_t = \text{LSTM}(h_{t-1}, x_t)</script><script type="math/tex; mode=display">
+p_t = \text{softmax}(W^{\text{LM}} h_t)</script><p>公式中的$\text{LSTM}$函数表示对于给定的序列元素$x_t$和$h^x_{t-1}$，使用LSTM的迭代公式计算出$h^x_{t}$。特别地，对于0时刻的$h^x_{0}$一般直接初始化为一个固定向量，神经语言模型中采用零向量。公式$p_t$将时刻$t$的LSTM网络输出投影到下一个元素的预测概率空间上，按照极大似然思想构建损失函数训练该模型，如下公式所示：</p>
+<script type="math/tex; mode=display">
+loss_{LM} = - \frac{1}{|D|}\sum _{S \in D} \sum_{t=1}^N V_{w_{t+1}} \text{log } p_t</script><p>其中$V_{w_{t+1}}$表示第$t+1$个词典单词对应的one-hot向量。句子序列$S=w_1w_2w_3…w_N$是训练集$D$的一个样本实例。总的来看，该公式是使用交叉熵函数计算句子序列$S$的拟合误差，然后按照极大似然估计的思想将训练集的所有样本误差求和，作为整个训练集的拟合误差。最后按照梯度下降法对上述式子进行优化，得到最终的神经网络语言模型。</p>
+<h3 id="语言模型和句子可读性"><a href="#语言模型和句子可读性" class="headerlink" title="语言模型和句子可读性"></a>语言模型和句子可读性</h3><p>一个句子可以看做是由词或字等基本元素构成的有序序列。句子的可读性从直观上来说是其元素排列符合语言语法的程度，本质上说是句子的出现概率。因此可以考虑使用语言模型来对一个句子的可读性进行打分。</p>
+<p>神经语言模型如上图所示，输入的句子序列是“天气好。”，加上起始符号$\text{<sos>}$一起作为输入序列，每个元素依次输入，然后依次预测下一个元素。一般来说，一个训练好的语言模型能正确预测下一个元素。如上图所示，当输入元素为“天”时，对应的输出元素应当是“气”，此时输出概率分布中，最大概率的输出元素是红色部分对应的词典元素“气”。该句子的可读性即是将所有红色部分的概率累乘起来，表示这句话的通顺程度。</p>
+<h3 id="tips"><a href="#tips" class="headerlink" title="tips"></a>tips</h3><ol>
+<li>神经语言模型中使用的RNN单元必须是单向的，因为训练过程是使用前文序列预测下一个单词的过程。假如使用双向RNN的话模型会利用到前文序列之后的信息，自然可以作弊得到前文序列的下一个单词。</li>
+<li>语言模型的评估指标常用困惑度，按照定义，这等价于句子可读性计算中提到的概率乘积的倒数。在实际操作中，概率累乘的过程可能会出现浮点数过小溢出，为了安全起见可以转化成对概率取对数再相加，最后再对加和的结果取指数。</li>
+</ol>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><blockquote id="fn_mikolov2010recurrent">
+<sup>mikolov2010recurrent</sup>.  Mikolov T, Karafiát M, Burget L, et al. Recurrent neural network based language model. Eleventh annual conference of the international speech communication association, 2010.<a href="#reffn_mikolov2010recurrent" title="Jump back to footnote [mikolov2010recurrent] in the text."> &#8617;</a>
+</blockquote>
+<blockquote id="fn_katz1987estimation">
+<sup>katz1987estimation</sup>.  Katz S. Estimation of probabilities from sparse data for the language model component of a speech recognizer. IEEE transactions on acoustics, speech, and signal processing, 1987, 35(3):400–401.<a href="#reffn_katz1987estimation" title="Jump back to footnote [katz1987estimation] in the text."> &#8617;</a>
+</blockquote>
+<blockquote id="fn_nn_as_func_appro">
+<sup>nn_as_func_appro</sup>.  Hornik K. Approximation capabilities of multilayer feedforward networks. Neural networks, 1991, 4(2):251–257.<a href="#reffn_nn_as_func_appro" title="Jump back to footnote [nn_as_func_appro] in the text."> &#8617;</a>
+</blockquote>
+<blockquote id="fn_hochreiter1997long">
+<sup>hochreiter1997long</sup>. Hochreiter S, Schmidhuber J. Long short-term memory. Neural computation, 1997, 9(8):1735–1780.<a href="#reffn_hochreiter1997long" title="Jump back to footnote [hochreiter1997long] in the text."> &#8617;</a>
+</blockquote>
+<blockquote id="fn_cho2014learning">
+<sup>cho2014learning</sup>.  Cho K, Van Merriënboer B, Gulcehre C, et al. Learning phrase representations using rnn encoderdecoder for statistical machine translation. arXiv preprint arXiv:1406.1078, 2014.<a href="#reffn_cho2014learning" title="Jump back to footnote [cho2014learning] in the text."> &#8617;</a>
+</blockquote>
+<blockquote id="fn_schuster1997bidirectional">
+<sup>schuster1997bidirectional</sup>.  Schuster M, Paliwal K K. Bidirectional recurrent neural networks. IEEE Transactions on Signal Processing, 1997, 45(11):2673–2681.<a href="#reffn_schuster1997bidirectional" title="Jump back to footnote [schuster1997bidirectional] in the text."> &#8617;</a>
+</blockquote>
+<blockquote id="fn_graves2005framewise">
+<sup>graves2005framewise</sup>.  Graves A, Schmidhuber J. Framewise phoneme classification with bidirectional lstm and other neural network architectures. Neural Networks, 2005, 18(5-6):602–610.<a href="#reffn_graves2005framewise" title="Jump back to footnote [graves2005framewise] in the text."> &#8617;</a>
+</blockquote>
+<blockquote id="fn_Jelinek1980interpolated">
+<sup>Jelinek1980interpolated</sup>.  Jelinek F, Mercer R L. Interpolated estimation of markov source parameters from sparse data. Pattern Recognition in Practice, 1980.<a href="#reffn_Jelinek1980interpolated" title="Jump back to footnote [Jelinek1980interpolated] in the text."> &#8617;</a>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huangmiaoxin.github.io/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MioKinHuang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MioKinHuang 's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/" itemprop="url">ICML2018演讲记录-深度学习基础理论</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-06T21:52:25+08:00">
+                2020-02-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%9B%B8%E5%85%B3%E7%90%86%E8%AE%BA/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习相关理论</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>本文是记录一下 <strong>ICML2018</strong> 上的演讲，讲解的东西比这个稍多，按照分类目录，将深度学习的基本理论相关的部分放在本文。</p>
+<h3 id="尝试理解网络"><a href="#尝试理解网络" class="headerlink" title="尝试理解网络"></a>尝试理解网络</h3><img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-57-20.png" class="">
+<img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-57-30.png" class="">
+<p>从优化的角度来看，深度网络作为一个映射工具，将输入映射到输出，在输出端，使用一些衡量差距的算式，计算出输出和期望输出的差距，然后用优化方法来矫正输出，使得输出和期望的输出接近。<br>不过，这种优化和传统的凸优化是不同的，基本上，我们面对的问题常常是很难保证是凸的，常规的优化器容易导致搜索到局部最优点。（可能经过设计的优化器有概率会跳过局部最优，前往更优点？）<br><img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-57-40.png" class=""><br>讨论的点如上图：</p>
+<ol>
+<li>面对一个非凸问题，如何使用梯度下降法或者其他变形方法寻找更优点？</li>
+<li>深度网络的参数量常常是很大的，而传统的一些统计的方法告诉我们，参数量远大于样本数量时，基本会带来严重的过拟合问题，但是，现在我们看到，网络的方法泛化能力很强。</li>
+<li>深度网络中，深度到底起什么作用？</li>
+<li>探讨一些关于无监督的方法和GAN</li>
+<li>是否有更简单的方法取代部分网络的模块，这种简单是指我们知道他的原理，可以方便的根据实际使用效果作分析和改进。</li>
+</ol>
+<h4 id="1-optimization-problem"><a href="#1-optimization-problem" class="headerlink" title="1. optimization problem"></a>1. optimization problem</h4><img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-57-57.png" class="">
+<p>深度网络中的优化问题多数属于非凸。<br><img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-58-07.png" class=""><br>实际上，很难设计优化器去跳出局部最优，朝着全局最优去进化。<br>我们想另一个问题，放弃一般性问题，即放弃随机初始化，是否能找到一些起始点，能证明从这些起始点开始迭代就能达到全局最优。<br><strong>高维度的诅咒</strong><br><img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-58-19.png" class=""><br>关于高维，有一个比较违背直觉的结论：<br>针对一个$d$维度的空间，在其中一定能找到数量级在$e^d$的若干个具体的向量，这些向量中，任意两个之间的夹角大于60度。<br>由此推出另一个更加普适的结论是：<br>针对一个$d$维度的空间，在其中一定能找到数量级在$e^{d/\epsilon }$的若干个具体的向量，这些向量中，任意两个之间的夹角大于$\epsilon$度。<br>这除了说明高维空间非常大之外，其实更重要的，假如我们按照一个精度$\epsilon$将空间离散为若干份，其中一个是最优方案，即参数空间中使得loss最小的那个最优解，我们寻找到这个最优解的过程是很艰难的，因为离散之后的向量数量级高达$e^{d/\epsilon }$。<br>如果我们能具体地知道参数空间和loss之间的映射关系构成的超平面，则可能不需要在一个高达$e^{d/\epsilon }$空间中穷尽地搜索，但实际上这个超平面是真的不知道。<br>另外补充一点：关于深度网络的黑盒。如果单纯从输入到输出，输出端用一个优化方法这一点来看，深度网络倒是完全不像黑盒。我们平时说的深度网络是一个黑盒，说的是这个超平面很难知道，即从输入到输出很难把握他的数学性质，也就无法求解参数，最后选择了忽视这些性质，直接做任务驱动的端到端求解。</p>
+<p>至此，我们承认，现在没有什么好方法能在一个未知的超平面中寻找全局最优解。</p>
+<p>下面简单分析一下在一个未知的超平面中做梯度下降法的问题。<br><img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-58-45.png" class=""><br><img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-58-54.png" class=""><br>我们经常使用的梯度下降法是计算出loss函数$f(\theta) $的梯度$\theta _t$，然后执行$\theta _{k} = \theta _{k-1} - \eta \Delta f(\theta)$更新参数值。这样做的道理是根据梯度的反方向可以知道函数下降的方向，但是不确定需要走多大的步伐，因为在极小的一个局部，梯度反方向可以确定函数的下降方向，但是步子迈得太大，迈出了该区域则可能函数反而是上升的。可以证明，应该迈多大的步伐取决于海塞矩阵的边界。直观理解就是，二阶导数决定了一阶导数的变化程度，而在极小的区域内，一阶导数可以近似函数的曲线幅度，如果二阶导数较大，将导致本次的一阶导数较大，一个较小的学习率$\eta$就可能导致函数横坐标超出有效的小区域。所以学习率应该是和二阶导数呈负相关的关系。</p>
+<p>以上是基础做法，可能带来的问题其实也很多，比如：</p>
+<ol>
+<li><p>鞍点问题：</p>
+<img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-59-05.png" class="">
+<p>鞍点的示意图如上图所示。以上做法实际上在求取梯度为0的点，鞍点同样是梯度为0的点，但是可以看到，鞍点并不是一个局部最小值。<br>paper《add noise to gradient》提出了一种能对付鞍点问题的方案。扰动的梯度下降法(perturbed gradient descend)<br>实际上，我们不需要在训练的时候引入噪声的，因为基于batch的随机梯度下降法本身就会带来不确定噪声，这些噪声作为扰动，已经可以帮助优化器脱离鞍点。</p>
+</li>
+<li><p>速度问题<br>我们知道，一阶优化的收敛速度慢于二阶优化器。二阶优化在传统的一些图优化问题其实是用的比较多的了，那么对于深度学习是否也可以直接设计高阶优化器呢？</p>
+<img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-59-19.png" class="">
+<p>二阶优化方法也称为牛顿法(Newton Method)。<br>实际上，原始的牛顿法是来自于方程求根问题。<br>考虑方程求根问题：即要求$f(x)=0$的解。<br>数值球迭代求解中，需要先做近似，考虑在点$x_0$附近做一阶的泰勒展开：</p>
+<script type="math/tex; mode=display">
+f(x)\approx f(x_0)+f'(x_0)(x-x_0)=0</script><p>故$x = x_0 - \frac{f(x_0)}{f’(x_0)}$，由此可以得到迭代式：$x_k=x_{k-1} - \frac{f(x_{k-1})}{f’(x_{k-1})}$，迭代式需要给定一个初始值$x_0$，初始值不需要严格限定范围。<br>可以看到，从理论数学的角度看，牛顿法需要保证取到的点都有导数值并且导数值不为0，这需要知道函数f的具体导数，才能完成求解。而实际操作中，可能并不知道函数f的导数形式，无法代入具体的$x_{k-1}$去计算导数值，这种情况下常常会使用一个近似处理，即使用前两次计算的点来近似计算导数，故迭代式变为：$x_k=x_{k-1} - \frac{x_{k-1}-x_{k-2}}{f(x_{k-1})-f(x_{k-2})} f(x_{k-1})$，这被形象地称为’割线法’。<br>我们知道，优化loss函数$g(x)$的时候，是在寻找一个参数值使得loss处于极小值点，即$g’(x)=0$，考虑使用牛顿法求解的话，此处的$g’(x)=f(x)$，故迭代式为：</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+x_k=x_{k-1} - \frac{g'(x_{k-1})}{g''(x_{k-1})}
+\label{1}
+\end{equation}</script><p>考虑到x是高维向量的情况，加上一个学习率$eta$，则式子(1)变为：</p>
+<script type="math/tex; mode=display">
+x_{k} = x_{k-1} - \eta {\Delta ^2 f(x)}^{-1} \Delta f(x)</script><p>这就是二阶方法做优化的迭代式。<br>这里面涉及到的计算，一个是梯度，这个我们在一阶优化中也需要算，另一个是二阶导数的导数，在这里体现为海塞矩阵的逆阵。94年，Paul等人证明了海塞矩阵可以在线性时间内求解，但是这里需要的是海塞矩阵的逆阵，当维度较高时这是一个非常棘手的问题。后来，又陆续有工作证明了，可以使用一些近似的方法来高效地计算海塞矩阵的逆阵（思路应该类似于割线法？）。这让二阶优化看到了新希望。<br>但是非常遗憾，人们在尝试了二阶优化器之后，发现训练出来的深度网络的效果要差于普通的一阶梯度下降方法训练出来的结果。<br>下面分别附一个随机梯度下降法和一个牛顿法的示意图，全部源自网络。</p>
+<img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-59-41.png" class="">
+<p>(SGD示意图)</p>
+<img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-00-02.png" class="">
+<p>（牛顿法示意图）</p>
+</li>
+<li><p>尝试打开黑盒</p>
+<img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-01-21.png" class="">
+<img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-01-39.png" class="">
+<p>18年有paper《Spurious Local Minima are Common in Two-Layer ReLU Neural Networks》证明了，针对比较简单的单隐层全连接网络，如果使用ReLU激活函数的话，那么当各层的维度$k$处于$6 \lt k \lt 20$时，难以保证参数平面是凸的，但是当k超过这个范围时，特别是当k较大时，是能这证明该参数平面的局部最优等价于全局最优的。从这个角度看，其实我们已经能打开普通的三层神经网络这个黑盒了。<br>但是，对于更多层的深度网络，目前没有新的研究进展。当前的研究最多的是停留在假设没有激活函数的情况，但是这样其实研究意义不大。因为不带有激活函数的多层神经网络其实也就等价于单层。</p>
+</li>
+</ol>
+<h4 id="3-overparameterization-and-generalization-theory"><a href="#3-overparameterization-and-generalization-theory" class="headerlink" title="3. overparameterization and generalization theory"></a>3. overparameterization and generalization theory</h4><ol>
+<li>加多参数量降低优化难度<img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-01-54.png" class="">
+有一个有趣的现象：如上图，假如随机初始化一个深度网络，然后随机输入一些向量，产生一些输出，当做labels，然后将这些输入和对应的输出固定为训练pair。此时使用另一个一模一样结构的网络，只是参数随机初始化，这时会发现，要拟合这些pair常常是很困难的。但是如果增加多一点参数，将使得拟合顺利得多。<br>另一个现象如下图：<img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-02-05.png" class="">
+我们想象中，随着训练次数的增加，训练集的loss会一直下降，但是测试集或者验证集的loss将应为随之而来的过拟合的发生，会先下降后上升。但实际中，对于深度网络，过拟合似乎不是那么明显。<br>关于这一点，其实传统的线性模型也有。<img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-02-15.png" class="">
+可以证明，线性模型的‘容量’正比于模型参数数量d的对数，反比于模型设定的距离y的平方。<br>衡量模型容量的方法：<img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-02-31.png" class="">
+<img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-02-39.png" class="">
+</li>
+</ol>
+<h4 id="4-role-of-depth"><a href="#4-role-of-depth" class="headerlink" title="4. role of depth"></a>4. role of depth</h4><p>和前面一篇博文《深度学习中网络拟合能力和网络深度的理论分析》雷同，就不浪费篇幅了。。</p>
+<h4 id="5-generative-model-and-GAN"><a href="#5-generative-model-and-GAN" class="headerlink" title="5. generative model and GAN"></a>5. generative model and GAN</h4><img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-02-54.png" class="">
+<p>一开始人们考虑生成模型的时候，是直接重构图片，这样导致了生成的图片非常模糊，而且图片与图片之间的插值不是正常的图片，产生了严重的重影。以人脸生成为例，中间插值的图片可能是多张人脸的叠加，模糊而且看起来很诡异，并不是真正的产生了人脸。<br><img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-03-03.png" class=""><br>于是一个新的思路是GAN。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huangmiaoxin.github.io/2020/02/06/%E6%9E%81%E5%A4%A7%E4%BC%BC%E7%84%B6%E4%BC%B0%E8%AE%A1%E5%92%8C%E6%9C%80%E5%A4%A7%E5%90%8E%E9%AA%8C%E6%A6%82%E7%8E%87%E4%BC%B0%E8%AE%A1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -703,318 +1868,13 @@ D_{loss} = \frac{1}{K} \sum D_2(y^{s(k)})-\frac{1}{K} \sum _{k=1}^KD_2(y^{real(k
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huangmiaoxin.github.io/2020/02/06/hung-yi-Lee%EF%BC%9ADeepLearningTheory2-md/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="MioKinHuang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MioKinHuang 's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/02/06/hung-yi-Lee%EF%BC%9ADeepLearningTheory2-md/" itemprop="url">深度学习中网络参数迭代求解的问题分析</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-06T17:01:00+08:00">
-                2020-02-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%9B%B8%E5%85%B3%E7%90%86%E8%AE%BA/" itemprop="url" rel="index">
-                    <span itemprop="name">深度学习相关理论</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h3><p>接上部分课程讲述深度网络拟合能力和网络深度的关系，本文主要尝试从数值求解的角度理解网络的参数迭代过程。大部分内容来自李宏毅老师关于深度学习理论的公开课，引用的图片来自课程ppt，按照个人理解做了一些梳理和总结。</p>
-<p>关于深度网络的参数求解，目前难以有直接求解的方法。我们都是按照梯度下降法来迭代求解。<br><img src="/2020/02/06/hung-yi-Lee%EF%BC%9ADeepLearningTheory2-md/2020-02-06-17-05-42.png" class=""><br>但是，我们其实并没有像传统的优化方法一样，苛求优化目标是一个凸函数。实际上，这个参数空间产生的loss函数并不是凸函数，如下：<br><img src="/2020/02/06/hung-yi-Lee%EF%BC%9ADeepLearningTheory2-md/2020-02-06-17-05-59.png" class=""><br>从基础常识我们知道，网络的最优解有很多组。例如上图，只要保持黑线和最黑的神经元连接，灰色的线和灰色神经元连接，那么随便颠倒黑色和灰色神经元的位置，这两种网络其实是等价的，即对于相同的input，对应的output都是一样的，但是这是两个不同的参数向量（矩阵），即loss函数起码存在多个最优解。<br>传统的优化理论不认可梯度下降方法来求解非凸问题，因为整个过程不具有数学严谨论证性，尽管目前实践效果极好，这点不是本文重点暂且按下不管。其实到这里仅仅能说明loss函数是非凸的，这个非凸函数有很多个最优解，那假如这个非凸函数没有其他的局部最小值，则还是可以用梯度下降求解这个非凸函数，毕竟只要找到其中一个最优值就行了，如下图：<br><img src="/2020/02/06/hung-yi-Lee%EF%BC%9ADeepLearningTheory2-md/2020-02-06-17-07-09.png" class=""></p>
-<p>从仅仅寻找其中一个最优解的立场出发，考究该场景的数值求解问题。</p>
-<h3 id="优化问题的探究"><a href="#优化问题的探究" class="headerlink" title="优化问题的探究"></a>优化问题的探究</h3><h4 id="1-Hessian"><a href="#1-Hessian" class="headerlink" title="1. Hessian"></a>1. Hessian</h4><p>先不管这个非凸函数是否存在其他局部极小值的问题。先暂时假设没有。那么使用梯度下降法求解的时候依然会遇到其他问题，例如鞍点问题，如下图所示：<br><img src="/2020/02/06/hung-yi-Lee%EF%BC%9ADeepLearningTheory2-md/2020-02-06-17-11-10.png" class=""><br>即一个梯度为0的点可能并不是一个极小值或者极大值点，高维情况下这可能是一个鞍点。（低维情况下，例如一维的情况，$f(x)=x^3$中一阶导数为0的点也不是极值点，这是一个拐点。）<br>所以如何衡量一个一阶导数为0的点是鞍点还是极值点，类比于$f(x)=x^3$中使用二阶导来判断是否拐点的情况，这里也需要使用二阶导，不过高维的二阶导是一个矩阵的形式，称为海塞矩阵(hessian matrix)。<br>首先引入一点关于海塞矩阵：<br><img src="/2020/02/06/hung-yi-Lee%EF%BC%9ADeepLearningTheory2-md/2020-02-06-17-11-36.png" class=""><br>按照参数是一维的情况画出示意图，如下：<br><img src="/2020/02/06/hung-yi-Lee%EF%BC%9ADeepLearningTheory2-md/2020-02-06-17-12-06.png" class=""><br>一维情境下：$f(x) \approx f(x_0)+f’(x_0)(x-x_0)+\frac{1}{2!} f’’(x_0)(x-x_0)^2$<br>故当$f’’(x_0)<0$时，一阶近似函数由于少了一个负数项，故其图像在原函数之上。反之则一阶近似函数的图像在原函数图像之下。
-至此，我们有两个选择：a)做的美一点，即直接将海塞矩阵融合到梯度下降法上面，其实就是办成一个二阶优化的做法；b)简单一点，使用梯度下降法求解从极值点之后再用海塞矩阵来判断极值点是否是鞍点；
-a). 
-<img src="/2020/02/06/hung-yi-Lee%EF%BC%9ADeepLearningTheory2-md/2020-02-06-17-12-35.png" class=""><br>然而，其实仔细想想又会发现，二阶优化在求的可能是一个局部极大值，也可能是一个鞍点。因为二阶优化的过程其实是在不断地对点x0周围的二阶拟合函数求取极值点而已，并不关心该极值点是个极大还是极小，也不关心是否是拐点。<br><img src="/2020/02/06/hung-yi-Lee%EF%BC%9ADeepLearningTheory2-md/2020-02-06-17-13-50.png" class=""><br>b).<br>矩阵H正定：对所有的非零向量$x$，$x^T H x&gt;0$成立。<br><img src="/2020/02/06/hung-yi-Lee%EF%BC%9ADeepLearningTheory2-md/2020-02-06-17-14-11.png" class=""><br>这张图中有一点错漏，$xHx \gt 0$应该是$x^T Hx \gt 0$。另一种情况，如果$x^T H x \ge 0$的时候，无法判断是否是极小值。因为这里只写出了二阶近似，等于0的时候，三阶以上余项的正负决定了该处是极小还是极大值。<br> 另外也可以从特征值分解的角度来看这个问题。<br>我们知道，海塞矩阵H是一个对称实矩阵，此时矩阵H正定可以推导出：矩阵H的特征值都是正的，并且所有的特征向量都彼此正交。<br><img src="/2020/02/06/hung-yi-Lee%EF%BC%9ADeepLearningTheory2-md/2020-02-06-17-14-30.png" class=""></p>
-<p>如上图，每一个向量$x$都可以分解到特征向量构成的正交基上，计算出来的结果可以看出，任意一个$x^T H x$都是正的，某个梯度为0的点如果海塞矩阵是正定的，则往四周走都是增加的，故这是一个local minima。<br>不过，当前对于梯度下降法在深度网络中到底寻找到的点是什么点还是有点存疑，例如下面这几张图：<br><img src="/2020/02/06/hung-yi-Lee%EF%BC%9ADeepLearningTheory2-md/2020-02-06-17-14-53.png" class=""><br>这个图说明了训练某个网络收敛之后，将梯度的长度打印出来，发现其实并不是0.<br><img src="/2020/02/06/hung-yi-Lee%EF%BC%9ADeepLearningTheory2-md/2020-02-06-17-15-05.png" class=""><br>这个图说明了收敛的过程中，并不是梯度不断减小的过程，这一点是违背一般直觉的。不过立足已有事实，尝试去解释事实，这个图其实也可以找到解释，梯度陡然增加的时候可能就是在逃离鞍点的时候。<br>补充：<br>我们知道hessian是二阶导，有时候，一些局部点的周围很‘平’，导致了这个局部点周围的二阶导都是0，即hessian是一个0矩阵。如下图，此时根据hessian也是难以判断的。<br><img src="/2020/02/06/hung-yi-Lee%EF%BC%9ADeepLearningTheory2-md/2020-02-06-17-16-08.png" class=""><br>这种时候，就无法使用hessian来判断到底是不是鞍点，考虑使用更高阶的导数或者其他方法。</p>
-<h4 id="2-is-local-minima"><a href="#2-is-local-minima" class="headerlink" title="2. is local minima?"></a>2. is local minima?</h4><p>前面还留了一个问题：loss关于参数的函数是非凸函数，这个函数是否存在其他局部极小值的。<br>在16年前后，有工作证明了，不加非线性函数的情况下，深度网络满足一点前提条件（hidden_dim大于等于input_dim和output_dim）的时候，即可实现local minima等于global minima。<br><img src="/2020/02/06/hung-yi-Lee%EF%BC%9ADeepLearningTheory2-md/2020-02-06-17-17-33.png" class=""><br>不过，不加非线性激活的网络其实没什么实际用途，现在的审稿也逐渐不收这类paper了。</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>本文尝试从优化问题出发，在理论层面去阐释深度网络数值求解会遇到的一些问题。但实际上由于无法用现有的数学工具完备地描述网络的工作原理，因此目前的数值求解方式只能先从实践层面获得认可，难以内化出统一严谨的数学理论。这一点也是深度学习学术界和工业界观点上互相看不上的关键，像极曾经的理论物理和数学之间的对立，物理讲求从实际建模，经过猜想和验证，能自洽甚至不够自洽，但只要能解决大部分场景下的实际问题，理论即为合理。数学似乎站在一个更高的层次，看不上物理派不够严谨的猜想，期待找到能抽象并解释物理定律的工具，但这并不妨碍两者各自沿着自己的发展轨迹前进。同理，深度学习极强的拟合能力和泛化性能造就了其在实践中攻城略地，吸引了更多的从业者，从实践出发也好，尝试从理论着手也好，都引入了更多的发展可能，共同为初级智能时代建设贡献着力量。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="MioKinHuang">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MioKinHuang 's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/" itemprop="url">深度学习中网络拟合能力和网络深度的理论分析</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-05T16:52:11+08:00">
-                2020-02-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%9B%B8%E5%85%B3%E7%90%86%E8%AE%BA/" itemprop="url" rel="index">
-                    <span itemprop="name">深度学习相关理论</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>本文大部分内容来自李宏毅老师关于深度学习理论的公开课，引用的图片来自课程ppt，按照个人理解做了一些梳理和总结。</p>
-<h3 id="1-can-shallow-NN-fit-any-function"><a href="#1-can-shallow-NN-fit-any-function" class="headerlink" title="1. can shallow NN fit any function?"></a>1. can shallow NN fit any function?</h3><img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-38-41.png" class="">
-<p>已经知道的结论是，一个单隐层fcnn而已拟合任意连续函数，那么如何证明呢？<br>首先，在该问题场景下定义出拟合的概念，如下：<br><img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-39-02.png" class=""><br>假定输入的x∈[0,1]，输出y不限定，同时定义一个映射空间和k有关，则对于任意小的数$\epsilon$ ，[0,1]区间之间拟合误差的最大值需要小于该设定的$\epsilon$，因为只要误差最大值小于设定的数，即可推出L2积分误差小于该设定值，符合函数拟合的定义。</p>
-<p>证明：<br>这里只证明待拟合函数$f$是L-Lipschitz函数的情况。定义如下：<br><img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-40-20.png" class=""><br>意味着说输出的变化会小于输入的变化，即该函数起伏较小，是一个较平滑且起伏缓和的函数。</p>
-<p>然后回到拟合的问题上，对于待拟合函数f，如下图，假如我们在f上均匀采样若干个点，每两个点的距离设定为$l$，然后将这些点连接起来，就可以得到初步的拟合函数g，同时，根据拟合的定义，每一段的最大拟合误差需要小于设定的$\epsilon$，又根据Lipschitz条件，我们可以知道图中的$error$一定是小于等于$ l L $，因此只要使得$ l L &lt;= \epsilon $成立，则目标达成，由此可以得到$ k=\frac{1}{l} &gt;= \frac{L}{\epsilon} $<br>即只要切分的数量k够多，对于任意小的$\epsilon$都可以满足拟合条件，由此证明完毕。<br><img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-23-24-56.png" class=""><br>直观地来说，上图的折线图在实际的网络中可以这样凑出来，如下图：<br><img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-41-10.png" class=""><br>每个小区间的直线可以使用两个ReLU函数拼接出来，故最终的网络如下，可以先使用两倍的神经元和ReLU数量得到每段折线图，然后将这些折线图加起来总的折线图。下图的NN实质上是单隐层。<br><img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-41-29.png" class=""></p>
-<p>由此可以证明，单隐层网络足够拟合任意的连续函数。但是客观上需要的神经单元可能不需要用到以上证明用的这么多。</p>
-<h3 id="2-So-why-deep"><a href="#2-So-why-deep" class="headerlink" title="2. So why deep?"></a>2. So why deep?</h3><p>既然上一节已经证明了shallow NN已经足够拟合任意连续函数，为什么还这么热衷于deep NN?<br>受限于严谨的数学描述工具来描述深度网络，其实很难完美地回答这个问题。<br>一些感性的答案，基本是从宏观的，笼统的角度来阐述。</p>
-<ol>
-<li>从电子设计中的逻辑电路设计这个角度来类比。我们知道，使用一个两层的基础逻辑器件可以搭建出任何的单元逻辑门。同样的，两层的网络可以拟合任何的连续函数，不严谨的说，这两者具有类比效果。我们知道，如果设计一个逻辑电路，设计深度较深的，可以节省逻辑门。从这里类比到，同样的神经元数量，搭建深度较深且窄的网络，拟合效果强于浅且宽的网络。<img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-41-59.png" class=""></li>
-<li>同样的神经元数量，更深的网络可以更容易地拟合复杂函数。先看另一个问题。一个具有$n$个神经元的函数，能产生的等价函数是一个多少段的分段函数？答案是很难说清，但是可以证明，上界是$2^n$，示意图如下所示：每个神经元有两种激活状态，故总体来看，网络一共是$2^n$种激活可能。（这是一个上界，实际上可能是很难达到这个上界的）<img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-42-35.png" class="">
-针对一个具体的例子，例如$f(x)=x^2$，需要多少个片段才能拟合地好，这个比较难计算，但是如果规定分段函数的每一段都是等宽的，则比较容易算，结果如下图：<img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-42-47.png" class="">
-附：实际上这种平方的网络是用很多普适性的。如下：<img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-42-57.png" class="">
-可以非常简单地获得两个数的乘积网络。然后从这点出发，可以继续产生多项式的网络，然后再按照泰勒展开式进一步产生指数型的网络，如下：<img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-43-07.png" class="">
-说回我们的问题，其实到这里还是证明不了deep的下限，但是，已经能找到deep的其中一个范围，即$O(log_2 \frac{1}{\sqrt{\epsilon}})$。同时，用其他的复杂方法，可以证明shadow的方法的上限是$O(\frac{1}{\sqrt{\epsilon}})$，故deep一定好过shadow（当然，有一个前提，即要拟合的函数要比$y=x^2$更复杂。形如一次函数，shadow的可能更好）。<img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-43-21.png" class="">
-</li>
-</ol>
-<p>以上是对于网络深度和拟合能力之间的关系的一些探究，还留下一个关于deep下限的问题，这实际上还没有较一统的结论，目前有一些尝试求证deep的下限的工作：<br><img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-44-23.png" class=""></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">&lt;i class&#x3D;&quot;fa fa-angle-right&quot;&gt;&lt;&#x2F;i&gt;</a>
+  </nav>
+
 
 
           </div>
@@ -1058,7 +1918,7 @@ a).
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1069,7 +1929,7 @@ a).
               
               <div class="site-state-item site-state-categories">
                 
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">分类</span>
                 
               </div>

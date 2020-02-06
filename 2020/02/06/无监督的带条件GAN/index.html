@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="引言本文是李宏毅老师的公开课的学习记录，全部图片来自李老师的课件。文字按照个人理解做了组织和阐释。主要介绍了基于GAN衍生出来的一些技术，无监督的带条件约束GAN，典型如CycleGAN。  Unsupervised Conditional Generation在conditional GAN中，例如训练一个给定文字描述产生对应的图片的模型，需要收集一些文字和对应图片的平行语料。但某些情况下，co">
+<meta property="og:type" content="article">
+<meta property="og:title" content="无监督带条件约束的GAN">
+<meta property="og:url" content="https://huangmiaoxin.github.io/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/index.html">
+<meta property="og:site_name" content="MioKinHuang &#39;s Blog">
+<meta property="og:description" content="引言本文是李宏毅老师的公开课的学习记录，全部图片来自李老师的课件。文字按照个人理解做了组织和阐释。主要介绍了基于GAN衍生出来的一些技术，无监督的带条件约束GAN，典型如CycleGAN。  Unsupervised Conditional Generation在conditional GAN中，例如训练一个给定文字描述产生对应的图片的模型，需要收集一些文字和对应图片的平行语料。但某些情况下，co">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/2020-02-06-23-12-02.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/2020-02-06-23-12-11.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/2020-02-06-23-12-19.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/2020-02-06-23-12-26.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/2020-02-06-23-12-39.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/2020-02-06-23-12-53.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/2020-02-06-23-13-02.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/2020-02-06-23-13-13.png">
+<meta property="article:published_time" content="2020-02-06T15:09:58.000Z">
+<meta property="article:modified_time" content="2020-02-06T15:17:35.421Z">
+<meta property="article:author" content="MioKinHuang">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://huangmiaoxin.github.io/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/2020-02-06-23-12-02.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://huangmiaoxin.github.io/2020/02/06/无监督的带条件GAN/"/>
+
+
+
+
+
+  <title>无监督带条件约束的GAN | MioKinHuang 's Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">MioKinHuang 's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huangmiaoxin.github.io/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MioKinHuang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MioKinHuang 's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">无监督带条件约束的GAN</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-06T23:09:58+08:00">
+                2020-02-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%9B%B8%E5%85%B3%E7%90%86%E8%AE%BA/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习相关理论</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>本文是李宏毅老师的公开课的学习记录，全部图片来自李老师的课件。文字按照个人理解做了组织和阐释。主要介绍了基于GAN衍生出来的一些技术，无监督的带条件约束GAN，典型如CycleGAN。</p>
+<hr>
+<h3 id="Unsupervised-Conditional-Generation"><a href="#Unsupervised-Conditional-Generation" class="headerlink" title="Unsupervised Conditional Generation"></a>Unsupervised Conditional Generation</h3><p>在conditional GAN中，例如训练一个给定文字描述产生对应的图片的模型，需要收集一些文字和对应图片的平行语料。但某些情况下，conditional GAN可以不用平行语料。一个常见的例子是图像风格的转化，如下：<br><img src="/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/2020-02-06-23-12-02.png" class=""><br>将写实风格的图片直接转化为梵高风格的图片。两个思路，一个是生成方法：使用根据两个domain之间的样本存在轮廓相同等特征，加一些约束，构建conditional GAN。另一个是比较直观的思路：将风景画和梵高的画都分别编码到一个空间，然后利用一些对齐的方法（例如使用少部分的平行数据）将这两个空间对齐。</p>
+<h4 id="1-direct-transform"><a href="#1-direct-transform" class="headerlink" title="1. direct transform"></a>1. direct transform</h4><p>把domain1的数据直接作为条件输入生成器G，产生新数据，然后使用分类器D进行判断，如下：<br><img src="/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/2020-02-06-23-12-11.png" class=""><br>这样直接做下去，生成器G可以直接生成和输入完全无关的图像，例如直接输出梵高的自画像，就能直接骗过分类器D。所以需要增加额外的约束，一个很明显的约束是限制生成器的输出和G在轮廓上相近，如下图：<br><img src="/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/2020-02-06-23-12-19.png" class=""><br>直接使用一个预训练的CNN接收G的输入和输出，约束这两个输出尽可能相近，即保证了G的生成图像轮廓和输入图像轮廓相近。<br>另一个约束可以是按重构误差的思路来，如下图：<br><img src="/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/2020-02-06-23-12-26.png" class=""><br>写实风格转梵高风格的对偶模型是梵高风格转写实风格，引入这个对偶模型，对两种图像分别进行重构。这是CycleGAN的做法，但实际上，这种重构不一定有用，因为很明显地两个模型可以合作唱双簧，中间产生的图像不一定是正常的图片。但实际上，这样做出来的效果一般还不错，原因可能是对模型来说，这种映射能力不是无限大的，为了能够重构，中间产生的图像必须轮廓上和输入图像较为接近。</p>
+<p>实际上，有另一个更为惊奇的做法是，不加约束，不管生成器G会直接生成和输入完全无关的图像去骗过分类器D这件事。这在网络深度较浅的时候也可以出效果，原因应该是模型倾向于生成轮廓上变动不大的图片。</p>
+<h4 id="2-projection-to-common-space"><a href="#2-projection-to-common-space" class="headerlink" title="2. projection to common space"></a>2. projection to common space</h4><p>这种想法比第一种想法更直观，直接把两种风格的图像各自完成autoencoder，如下：<br><img src="/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/2020-02-06-23-12-39.png" class=""><br>此时中间获得的图像表示向量v可以看做携带了图像的绝大部分信息，但是，这两个autoencoder获得的v意义是不一样的，例如假设v有3维，对写实风格的图像来说v的三个维度分别表示头发的长度，眼睛大小，脸的大小。但是对于漫画风格的图像来说v的三个维度可能是代表眼睛大小，脸的大小，头发的长度，甚至于说这种差别可以完全不是顺序问题。因此，这两个图像表示空间可能完全是无法对齐的。<br>解决方法：</p>
+<h5 id="2-1-共用参数"><a href="#2-1-共用参数" class="headerlink" title="2.1 共用参数"></a>2.1 共用参数</h5><p>这个问题的一个解决方法是，共用两个autoencoder的参数，尽可能让这两个表示空间v相同，但实际上又不好使用完全相同参数的autoencoder，因此仅仅在encoder的最后几层和decoder的前几层共享参数。或者想要直接整个autoencoder共享参数的话需要在encode的时候顺便输入一个flag，表示此时是编码写实风格的还是漫画风格的图像，然后对应解码，测试的时候只需要将flag颠倒，即可得到风格转换的目标图像。<br><img src="/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/2020-02-06-23-12-53.png" class=""></p>
+<h5 id="2-2-强迫空间对齐"><a href="#2-2-强迫空间对齐" class="headerlink" title="2.2 强迫空间对齐"></a>2.2 强迫空间对齐</h5><p>另一个解决方案是增加一个分类器判断两种autoencoder的中间表示v来自哪个domain。该思路的出发点是既然两个空间是不对齐的，那么可以使用分类器识别出来，然后按照以分类器识别不出来为目标去调整两个autoencoder使得空间对齐。</p>
+<p>题外：<br>有另一个问题是，使用均方差作为重构误差会带来生成的图像较模糊这个问题，很直觉地，按照GAN的思路，该问题可以使用引入分类器D来缓解，如下，其实就是VAE-GAN的思路。<br><img src="/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/2020-02-06-23-13-02.png" class=""></p>
+<h5 id="2-3-Cycle-consistency"><a href="#2-3-Cycle-consistency" class="headerlink" title="2.3 Cycle consistency"></a>2.3 Cycle consistency</h5><p>另一个解决方法依然是利用重构误差，如下：<br><img src="/2020/02/06/%E6%97%A0%E7%9B%91%E7%9D%A3%E7%9A%84%E5%B8%A6%E6%9D%A1%E4%BB%B6GAN/2020-02-06-23-13-13.png" class=""><br>构建的回环是从写实风格的图片1到漫画风格，然后继续将漫画风格转换成写实风格的图片2，图片1和2构成重构约束。其实这整个过程和CycleGAN的做法一直，只不过这里只用了一个重构过程（其实也可以把漫画风格的进行重构）。在CycleGAN中没有显式地画出encoder和decoder的过程，这里的ENx和DEy就构成了CycleGAN中的一个生成函数$G_{x-&gt;y}$，ENy和DEx就构成了CycleGAN中的一个另一个生成函数$G_{y-&gt;x}$。以上就是ComboGAN，和CycleGAN其实是同个东西。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/02/06/%E5%90%84%E5%BC%8F%E5%90%84%E6%A0%B7%E7%9A%84gan-wgan-and-ebgan/" rel="next" title="各式各样的GAN——WGAN，EBGAN">
+                <i class="fa fa-chevron-left"></i> 各式各样的GAN——WGAN，EBGAN
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/02/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E4%B8%8B%E4%B8%80%E6%AD%A5/" rel="prev" title="机器学习当前发展中的一些问题">
+                机器学习当前发展中的一些问题 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">MioKinHuang</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#引言"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Unsupervised-Conditional-Generation"><span class="nav-number">1.1.</span> <span class="nav-text">Unsupervised Conditional Generation</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-direct-transform"><span class="nav-number">1.1.1.</span> <span class="nav-text">1. direct transform</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-projection-to-common-space"><span class="nav-number">1.1.2.</span> <span class="nav-text">2. projection to common space</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#2-1-共用参数"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">2.1 共用参数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-2-强迫空间对齐"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">2.2 强迫空间对齐</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-3-Cycle-consistency"><span class="nav-number">1.1.2.3.</span> <span class="nav-text">2.3 Cycle consistency</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MioKinHuang</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

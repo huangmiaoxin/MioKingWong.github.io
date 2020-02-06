@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="引言本文是李宏毅老师的公开课的学习记录，全部图片来自李老师的课件。文字按照个人理解做了组织和阐释。主要介绍了几种GAN——infoGAN, VAE-GAN, BiGAN。 infoGAN普通的GAN中，生成函数G的输入是一个随机向量，输出是一个图片（例如手写数字）。实践中发现，这个随机向量的维度没有实际物理含义：线性地改变向量的某个维度的数值，然后输入到生成函数G，获得的图片并没有呈现出某个物理层">
+<meta property="og:type" content="article">
+<meta property="og:title" content="各样各式的GAN——infoGAN, VAE-GAN, BiGAN">
+<meta property="og:url" content="https://huangmiaoxin.github.io/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/index.html">
+<meta property="og:site_name" content="MioKinHuang &#39;s Blog">
+<meta property="og:description" content="引言本文是李宏毅老师的公开课的学习记录，全部图片来自李老师的课件。文字按照个人理解做了组织和阐释。主要介绍了几种GAN——infoGAN, VAE-GAN, BiGAN。 infoGAN普通的GAN中，生成函数G的输入是一个随机向量，输出是一个图片（例如手写数字）。实践中发现，这个随机向量的维度没有实际物理含义：线性地改变向量的某个维度的数值，然后输入到生成函数G，获得的图片并没有呈现出某个物理层">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-37-41.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-37-50.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-38-09.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-38-24.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-38-33.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-38-43.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-38-56.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-39-40.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-39-07.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-39-58.png">
+<meta property="article:published_time" content="2020-02-06T14:34:11.000Z">
+<meta property="article:modified_time" content="2020-02-06T14:41:53.608Z">
+<meta property="article:author" content="MioKinHuang">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://huangmiaoxin.github.io/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-37-41.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://huangmiaoxin.github.io/2020/02/06/各样各式的GAN/"/>
+
+
+
+
+
+  <title>各样各式的GAN——infoGAN, VAE-GAN, BiGAN | MioKinHuang 's Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">MioKinHuang 's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huangmiaoxin.github.io/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MioKinHuang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MioKinHuang 's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">各样各式的GAN——infoGAN, VAE-GAN, BiGAN</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-06T22:34:11+08:00">
+                2020-02-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%9B%B8%E5%85%B3%E7%90%86%E8%AE%BA/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习相关理论</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>本文是李宏毅老师的公开课的学习记录，全部图片来自李老师的课件。文字按照个人理解做了组织和阐释。主要介绍了几种GAN——infoGAN, VAE-GAN, BiGAN。</p>
+<h3 id="infoGAN"><a href="#infoGAN" class="headerlink" title="infoGAN"></a>infoGAN</h3><p>普通的GAN中，生成函数G的输入是一个随机向量，输出是一个图片（例如手写数字）。实践中发现，这个随机向量的维度没有实际物理含义：线性地改变向量的某个维度的数值，然后输入到生成函数G，获得的图片并没有呈现出某个物理层面的渐变效果，例如笔画的粗细，数字的倾斜程度等等。如下：<br><img src="/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-37-41.png" class=""><br>这个问题的一个可能的解释是：从人自身的角度出发，我们认可笔画的粗细，数字的倾斜程度，颜色等作为特征，渐进地改变某个维度的数值时，就像图中右下角的坐标一样，会经历颜色属性的改变，但对于生成函数来说，它认为的特征可能是另一种人类不熟悉的属性，当渐进地改变这种属性时，转换为图片之后人看到的特征就像是多类特征的杂合，甚至没有规律。<br>如果能解决这个问题，将使得生成模型的效果较为可控，infoGAN就是为了解决这个问题被提出的。如下：<br><img src="/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-37-50.png" class=""><br>在普通GAN的基础上做出的改动是：输入的向量拼接多一项c，同时增加一个分类器，从生成的图片中将c重新解析出来。为了避免生成函数G直接把c的信息明显地放在生成图片中，因此必须保证生成图片是正常的，故不能拆掉分类器D。</p>
+<p>infoGAN这种做法的出发点是，如果在输入端额外增加了某种信息c，而这种信息没有被分类器D发现，同时解析器C还能从图片中解析出信息c（假如解析器C的脑补能力并没有很强），那么这种信息只能来自于图片的内容，因此这种做法会强迫信息c去影响图像的内容中，通过内容将信息传递给解析器C，这种影响可能就是通过影响一些属性（笔画粗细等）达成的，因此此时的向量c有可能具备渐进地控制生成图像内容的能力。以上要求解析网络C的能力不能太强，因为如果解析网络C的能力很强，可能C和G会合作找到一种接头暗号，将信息c简单地放在图像的某个小区域，同时骗过分类器D的底层参数，使其发现不了（可能信息c藏得很散乱或者是很微弱，D发现不了但是C的能力很强可以解析出来）。因此需要想办法限制一下C网络的能力，结合这个场景，一个较好的方法是让解析网络C和分类器D尽可能多地共享参数，另外地，C和D都是接收生成图像，因此它们的底层网络本来也应该是一样的。</p>
+<p>效果：<br><img src="/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-38-09.png" class=""><br>从第一张图的结果看，信息c的第一维控制数字；从第三张图看，第二维度控制倾斜角度；从第三张图看，第三维度控制笔画的粗细。</p>
+<h3 id="VAE-GAN"><a href="#VAE-GAN" class="headerlink" title="VAE-GAN"></a>VAE-GAN</h3><p>顾名思义，将VAE和GAN结合起来。这种做法的出发点是原始VAE应用在图像中是使用像素均方差作为loss函数，这种做法生成的图像往往很模糊，因此考虑引入GAN做改进。此时，VAE的decoder作为生成函数G，后接一个分类器D，总体结构如下：<br><img src="/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-38-24.png" class=""><br>需要注意的是这里不仅仅把autoencoder重构出来的图像x作为假样本，还需要使用随机的向量输入decoder解码获得的图像作为假样本。真样本就只有真实图片这一种。<br>算法流程如下，第五个小点中$\hat{x^i} = En(z^i)$改为$\hat{x^i} = De(z^i)$，其余没有什么需要补充的。<br><img src="/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-38-33.png" class=""></p>
+<h3 id="BiGAN（Bidirectional-GAN）"><a href="#BiGAN（Bidirectional-GAN）" class="headerlink" title="BiGAN（Bidirectional GAN）"></a>BiGAN（Bidirectional GAN）</h3><p>BiGAN是另一种改进思路。分开学一个encoder和decoder，和autoencoder中的encoder和decoder的作用相同，encoder吃一个图片，获得一个编码向量z，decoder吃一个编码向量z（随机产生），获得一个图片。整个过程看起来和autoencoder很相似，唯一的不同是encoder输出的z并不会直接输入到decoder中，所以在这一点上encoder和decoder并没有什么联系，而是通过另一个分类器D来建立联系。如下图：<br><img src="/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-38-43.png" class=""><br>分类器D在这里需要分开的对象是encoder的输入输出构成的整体和decoder的输入输出构成的整体。训练的最终目的当然就是让分类器D分不开，这时候encoder的输入输出和decoder的输出输入可以认为是接近的，这时再把encoder和decoder拼接起来作后续的使用。</p>
+<p>按照李宏毅老师的理解，这种做法和直接做autoencoder在达到最优解的情况下是一样的，但其实无法达到最优解，因此两种做法最终的结果有不同。如下：<br><img src="/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-38-56.png" class=""><br>我想其实可以从GAN对图像清晰程度的提升这一点来分析，普通autoencoder对图像的重构使用像素均方差，将decoder单独拿出来使用会出现生成图像模糊的问题，BiGAN中分类器最终的目标是分不清真实encoder和decoder的输入和输出，可能可以推导到分不清真实图像和生成图像，这会提升decoder的生成图像质量。<br>实践中BiGAN的效果的部分示意图如下：<br><img src="/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-39-40.png" class=""><img src="/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-39-07.png" class=""><img src="/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/2020-02-06-22-39-58.png" class=""><br>和普通autoencoder得到模糊的图像不同，BiGAN得到的图像纹理比较清晰，但是整体看起来不太像真实图片==。另外，BiGAN的结果有一个特点是，例如输入一个鸟的图片，重构结果也是类似鸟的图片但角度各方面都不会和原图一致。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/02/06/%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B/" rel="next" title="遣词造句的规律，人类语言的奥秘——语言模型">
+                <i class="fa fa-chevron-left"></i> 遣词造句的规律，人类语言的奥秘——语言模型
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/" rel="prev" title="生成对抗网络（GAN）和Conditional GAN">
+                生成对抗网络（GAN）和Conditional GAN <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">MioKinHuang</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#引言"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#infoGAN"><span class="nav-number">1.1.</span> <span class="nav-text">infoGAN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#VAE-GAN"><span class="nav-number">1.2.</span> <span class="nav-text">VAE-GAN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BiGAN（Bidirectional-GAN）"><span class="nav-number">1.3.</span> <span class="nav-text">BiGAN（Bidirectional GAN）</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MioKinHuang</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

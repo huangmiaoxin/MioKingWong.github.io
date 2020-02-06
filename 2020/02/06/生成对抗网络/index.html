@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="引言本文是李宏毅老师的公开课的学习记录，本节主要介绍的是生成对抗网络（GAN）和带条件的GAN。笔记的全部图片来自李老师的课件。文字按照个人理解做了组织和阐释。 1. introduction生成器+判别器（Generator+Discriminator）Generator原始paper中使用深度网络作为生成器，输入一个随机向量z，输出图像。 Discriminator判别器依然使用深度网络学习一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="生成对抗网络（GAN）和Conditional GAN">
+<meta property="og:url" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/index.html">
+<meta property="og:site_name" content="MioKinHuang &#39;s Blog">
+<meta property="og:description" content="引言本文是李宏毅老师的公开课的学习记录，本节主要介绍的是生成对抗网络（GAN）和带条件的GAN。笔记的全部图片来自李老师的课件。文字按照个人理解做了组织和阐释。 1. introduction生成器+判别器（Generator+Discriminator）Generator原始paper中使用深度网络作为生成器，输入一个随机向量z，输出图像。 Discriminator判别器依然使用深度网络学习一">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-46-44.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-46-56.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-47-07.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-47-18.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-47-27.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-47-41.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-47-50.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-48-01.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-48-09.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-48-16.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-48-28.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-48-38.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-48-48.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-49-20.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-49-35.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-50-05.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-50-14.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-50-22.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-50-29.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-50-54.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-51-06.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-51-16.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-52-17.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-52-29.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-52-40.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-52-56.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-53-05.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-53-34.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-53-53.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-54-04.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-54-16.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-54-25.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-54-34.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-54-44.png">
+<meta property="article:published_time" content="2020-02-06T14:44:02.000Z">
+<meta property="article:modified_time" content="2020-02-06T15:01:06.907Z">
+<meta property="article:author" content="MioKinHuang">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-46-44.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://huangmiaoxin.github.io/2020/02/06/生成对抗网络/"/>
+
+
+
+
+
+  <title>生成对抗网络（GAN）和Conditional GAN | MioKinHuang 's Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">MioKinHuang 's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huangmiaoxin.github.io/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MioKinHuang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MioKinHuang 's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">生成对抗网络（GAN）和Conditional GAN</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-06T22:44:02+08:00">
+                2020-02-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%9B%B8%E5%85%B3%E7%90%86%E8%AE%BA/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习相关理论</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>本文是李宏毅老师的公开课的学习记录，本节主要介绍的是生成对抗网络（GAN）和带条件的GAN。笔记的全部图片来自李老师的课件。文字按照个人理解做了组织和阐释。</p>
+<h3 id="1-introduction"><a href="#1-introduction" class="headerlink" title="1. introduction"></a>1. introduction</h3><p>生成器+判别器（Generator+Discriminator）<br>Generator<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-46-44.png" class=""><br>原始paper中使用深度网络作为生成器，输入一个随机向量z，输出图像。</p>
+<p>Discriminator<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-46-56.png" class=""><br>判别器依然使用深度网络学习一个函数映射关系，输入一个图片，输出一个标量，表示这个图像接近真实图像的程度。</p>
+<img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-47-07.png" class="">
+<p>伪代码比较易懂，将G和D交替更新。例如，先固定G，训练D使得其分辨真实样本和生成样本，然后固定D，训练G使得其输出的样本在D上获得高分。</p>
+<p>实际上可以要获得这样的生成器，一个更容易的，直观的想法是直接使用auto-encoder，训练模型完成图像的重构，即可获得图像的中间向量表示和一个decoder，作为G。但实际上，这样获得的向量表示空间非常不连续，如下图：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-47-18.png" class=""><br>训练好的decoder在左倾斜的数字1和右倾斜的数字1之间的空间是未训练过的，因此无法在这两个表示向量之间进行插值去获得正的数字1，所以这个decoder其实并不好。一个很容易想到的改进是使用VAE，如下：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-47-27.png" class=""><br>使用VAE获得的decoder效果要好很多。</p>
+<p>VAE做出来的decoder和GAN获得的G相比：GAN可以视为是结构化学习的方法。使用G产生样本，然后按照D的判断决定样本的质量。而在VAE中，算是使用G产生样本，然后计算样本的重构误差，误差一般使用像素的均方差，但实际上图像的质量并不是由均方差来决定。因为无法将误差理想化地训练为0，所以最终网络必须进行妥协，把误差分摊到多个像素上，但人类实际上不关心每个像素的质量，更关注画面总体的质量，例如产生人脸时，局部的部分如眼睛鼻子等的边缘不能模糊，人脸总体必须分布协调等。因此使用均方差并不合适。但是采用何种误差方法很难言明，干脆直接使用网络来决定，该网络称为D，把生成样本和真实样本都作为判别器的输入，假样本判断为0，真实样本判断为1。 从结构化学习的角度来看这个问题，如下图：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-47-41.png" class=""><br>均方差的损失函数产生的结果会顾及组成图像的某些部件，例如图中数字2的不同部位（上方的弯曲，下方的横线等部件），但是部件之间的组合没有十分合理，例如左边的的数字2，右下方有一个像素游离于数字2这个主体之外，实际上，对于普通的生成器和像素均方差损失函数，很容易出现这种问题，因为生成器生成不同像素的时候没有大局视野，生成不同像素的神经元之间没有配合好。而对于GAN来说，引入了D，输入的是一整个生成样本，优化这个画面数据使其接近真实图像，可以使得D具有大局观，产生结构搭配上更合理的图像。<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-47-50.png" class=""></p>
+<p>G在生成数字2的各个部件时，可能很难考虑多个部件之间的结构关系，但是当生成了完整的数字2之后，D只需要检查一下结构关系是否合理，这是一件较直观的事情。</p>
+<p>从结果上来看，VAE产生的效果确实相较于GAN更差一些。<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-48-01.png" class=""><br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-48-09.png" class=""><br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-48-16.png" class=""><br>对比人脸，使用VAE获得的人脸在边缘细节上较为模糊，相比之下GAN更具有全局观。但是VAE也有自身的优点，从第一个统计图可以看出，VAE产生的样本数据质量比较均匀（虽然模糊），GAN产生的数据质量差距较大，但最好的数据的质量明显高过VAE。从数据点分布来看，第一个图的蓝色点是真实样本点，红色是GAN产生的样本点，基本逼近了真实样本点的分布情况。第二个图的绿色点是真实样本点，蓝色是VAE产生的样本点，总体效果还可以，但是不够精准。</p>
+<p>思考：<br>假设可以解下面的方程：</p>
+<script type="math/tex; mode=display">
+x = \text{argmax}_{x} (D(x))</script><p>那么是否能不使用生成器，直接用真实样本来训练一个判别器。<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-48-28.png" class=""><br>对于一个训练到一半的D，可以随机采样一些数据，看D的打分，记录分数高的图像，视为假样本，继续训练D，重复以上过程。<br>但实际上，因为高维空间非常广阔，要解argmax方程极度困难。<br>从这个角度来看，生成器其实在尝试做argmax的工作，如下图：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-48-38.png" class=""></p>
+<p>总结：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-48-48.png" class=""><br>GAN使用深度网络来代替以往的人工定义的损失函数，在图像问题上摒弃了像素均方差的方法，可以获得更加真实的图像。从结构化学习的角度看，原先的均方差方式没有办法考虑成图的组件之间的结构联系，不符合真实图像的规律，而D可以直接输入整个图像，发掘图像与真实图像的差别，进而调节生成器G。</p>
+<p>从拟合数据分布的角度来看，GAN的过程直观展示如下图：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-49-20.png" class=""><br>为了直观，将图像数据视为1维，绿色部分是真实数据分布。<br>一开始生成器G产生的数据分布和真实分布并不一致。通过采样G的数据和真实样本数据，使用D的判断，告诉G这部分生成数据的概率应该增大或者减小，从而改变G产生的数据的分布。当最终达到平衡时，G产生的数据分布逼近了真实分布。</p>
+<h3 id="2-推导"><a href="#2-推导" class="headerlink" title="2. 推导"></a>2. 推导</h3><h4 id="极大似然和KL散度"><a href="#极大似然和KL散度" class="headerlink" title="极大似然和KL散度"></a>极大似然和KL散度</h4><p>首先回顾生成模型在做的事情：寻找数据的分布。详细一点来说，如下图：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-49-35.png" class=""><br>按照已知的$P_{data}(x)$，采样获得$x_1, x_2, …, x_m$，构成数据集X。要拟合真实分布$P_{data}$，等价于拟合数据集X。首先预定某一个分布，参数为$\theta$，从中采样数据$P_G(x;\theta)$，按照极大似然的思想，假如参数$\theta$的分布拟合了真实数据$P_{data}(x)$，则从参数$\theta$ 的分布中采样m个数据等于数据集X的概率应该最大，据此获得目标函数：</p>
+<script type="math/tex; mode=display">
+\prod_{i=1}^m P_G(x_i, \theta)</script><p>上述公式总体上看是在求取真实分布$P_{data}$和生成分布$P_G$的差距，具体的计算细节是化为求真实数据$x_i$和生成数据$x \sim P_G(x;\theta)$的交叉熵。<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-50-05.png" class=""><br>而实际上，由于该过程中$P_{data}$和参数$\theta$无关，因此可以将$P_{data}$的信息熵加到交叉熵中，构成相对熵(KL散度)。<br>综上，生成模型的损失函数实际上是在求取生成分布和真实分布之间的KL散度。</p>
+<h4 id="GAN中衡量两个分布的差距"><a href="#GAN中衡量两个分布的差距" class="headerlink" title="GAN中衡量两个分布的差距"></a>GAN中衡量两个分布的差距</h4><p>公式\ref{mle_gen}中的参数为$\theta$的分布可能非常复杂，难以定义。但实际上一个复杂分布可以使用一个标准正态分布后接一个深度网络来近似，此处的深度网络能把标准正态分布采样获得的向量任意变换成为一个复杂分布采样获得的向量，实际上是把标准正态分布“扭曲”成为任意分布。此时上述目标函数中的参数$\theta$实际上包含了标准正态分布的参数和深度神经网络的参数，不过标准正态分布的参数已知因此参数$\theta$实际上是深度网络的参数。如下：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-50-14.png" class=""></p>
+<p>此处，GAN不是直接计算$P_G$和$P_{data}$之间的某种接近程度（散度）。而是直接利用一个深度网络来判断这种“差距”，如下：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-50-22.png" class=""><br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-50-29.png" class=""></p>
+<p>直观上来说，我们希望生成分布和真实分布非常接近，但是现在暂时先不使用散度的做法来计算这种接近程度，而是考虑使用一个分类器D来间接完成这种“散度”计算。可以直观地想象，假如高维空间中两个数据分布之间的距离较大，则可以很容易地找到一个超平面将这两类数据分隔开，而如果两个数据分布之间的间隙很小，几乎是同一个分布，则难以使用超平面将数据分开。鉴于此，目标转化为寻找参数$\theta$（也就是生成网络G）使得一个分类能力极强的分类器D无法分类生成数据和真实数据（此时要求D分类能力极强，因此在该场景下需要使用生成数据不断训练D使其分类能力提升，能分类生成数据和真实数据）。</p>
+<p>根据以上分析，G和D都是一个函数，我们的目标是寻找一个生成函数G使得分类函数D无法分类生成数据和真实数据。<br>按照二分类的目标函数：</p>
+<script type="math/tex; mode=display">
+L(D) = P_{data}(x)log D(x) + P_G(x) log(1-D(x))</script><p>首先最大化$L(D)$，即寻找D使得分类效果最大，此处D是一个函数，随着真实数据$P_{data}$和生成数据$P_G$的不同取不同的最优分类解，因此，D与且仅与$P_{data}$和$P_G$有关。按照泛函求导，如下：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-50-54.png" class=""><br>首先确定D，相当于不管生成函数G产生何种数据分布，都能直接按照公式$D(x) = \frac{P_{data}(x)}{P_{data}(x)+P_G(x)}$获得最优的分类器D，D已经和G直接挂钩，可以忽略了，只考虑G的取值问题（这里假设函数D能直接一步到位寻找到最优解，这是一个很强的假设，但实际操作的时候，这一步寻找最优的D需要靠G产生的数据和真实数据训练得到的，未必能逼近此时数学计算中理想的最优D），将D替换成G，此时问题转化如下：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-51-06.png" class=""><br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-51-16.png" class=""></p>
+<p>从实际操作来说，这一步需要使用生成函数G产生数据进行模型G的训练。前面说了，最优分类器D也需要使用生成数据和真实数据进行训练，从这里也可以看出，GAN的过程可以是生成函数G和分类函数D交替训练的过程。</p>
+<p>从最终结果可以看到，最终GAN等价于计算某种散度（此处是JS散度），毕竟需要衡量两个分布之间的差距。前面按照直觉分析了计算分布差距可以转化为二分类问题，以上过程从数学的角度说明了，生成数据和真实数据的二分类在这个问题场景本质上是在逼近JS散度。</p>
+<p>从一开始的分析中我们得到，生成模型需要寻找一个生成函数G使得$P_G$和$P_{data}$接近，即：</p>
+<script type="math/tex; mode=display">
+G = \mathop{\arg\min}_{G} \ \ div(P_G, P_{data})</script><p>后来又将$div(P_G, P_{data})$转化成使用生成函数D来衡量$P_G$$P_{data}$的可分程度，此处的D必须是当前最优分类器，即：</p>
+<script type="math/tex; mode=display">
+div(P_G, P_{data}) = \mathop{\arg \max}_{D} \ \ V(D, G) = \mathop{\arg \max}_{D} \ \ P_{data}(x)logD(x) + P_G(x)(1-log D(x))</script><p>因此，综合上面两个式子，我们其实是在求解：</p>
+<script type="math/tex; mode=display">
+G = \mathop{\arg \min}_{G} \ \ \mathop{\arg \max}_{D} \ \ V(G, D)</script><p>下面看一个简单的具体例子：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-52-17.png" class=""><br>假设目前的G函数只有三个，分别是G1，G2和G3。D函数有无穷多个，排列在x轴。则分别针对3个生成函数，寻找V(D,G)的最高分，然后选中这三个最高分中的最小值对应的生成函数G，即是G3作为求解结果。这里也可以看到一个明显的博弈过程，D要在3个G的场景下表现最好，即最优分类，而G的生成能力要最强，就要在3个D最优分类的基础上找最差分类，表明最优分类的D都能难区分G的生成结果。</p>
+<p>算法的实做过程：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-52-29.png" class=""><br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-52-40.png" class=""><br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-52-56.png" class=""><br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-53-05.png" class=""></p>
+<p>总结一下：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-53-34.png" class=""></p>
+<h3 id="3-Conditional-GAN"><a href="#3-Conditional-GAN" class="headerlink" title="3. Conditional GAN"></a>3. Conditional GAN</h3><p>原始的GAN虽然可以作为生成能力很强的生成模型使用，但由于输入是随机噪声，生成的结果可能不是我们预期要的效果，总体看并不可控。考虑在此基础上增加一个限制条件作为约束。例如不再随机产生图片，而是输入文字产生对应画面的图片。<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-53-53.png" class=""><br>这个任务有点像图片字幕的对偶任务，一直最直接的思路是，使用文字和图片构成的数据集，端到端有监督地训练一个文字到图片的映射关系。但这么做是不够的，例如带有火车这个单词的样本很多，对应的标签中火车可能是不同的角度，因此最终得到的文字到图片的映射网络为了拟合总体的误差，会将火车输出为多种角度的平均角度，即一个模糊的火车。因此传统方法不适用。</p>
+<p>可以在原始GAN的基础上改进，设计带（约束）条件的GAN，如下：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-54-04.png" class=""><br>很明显地，生成函数不仅仅输入一个随机分布向量，也需要输入文字描述的语义向量，但是此时产生的图片作为假样本，真实图片作为真样本，最终会变成G只产生像真实图片的图片，不管图片和输入的描述文本是否匹配。所以，分类器D还需要知道生成函数G一开始接收的文字描述信息，因此输入应当包括文本和图片两项。真样本当然是文本加匹配的真图片，假样本是文本加假图片，此处假图片必须是不匹配的真图片和生成器生成的图片两者皆有。如果不加入不匹配的真图片，生成器G依然可以通过产生和文字描述无关的逼真图片，并且分类器D忽视文字输入而最终达到GD均衡，因此此处的假样本必须有文字加不匹配的真实图片。</p>
+<p>下面是伪代码描述，总体过程相比原始的GAN多了文本输入和多一种假样本，其余不变。<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-54-16.png" class=""></p>
+<p>至此，CGAN的网络架构和原始的GAN一致，区别仅在输入端和假样本。有一些文献设计了不同的架构，如下：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-54-25.png" class=""><br>出发点应该是生成器G产生符合要求的样本可以分两步走，一个是产生的图首先必须逼真，然后再是和文字描述足够匹配。于是可以将生成器产生的图片分两个分支，一个约束逼真程度，一个约束匹配程度。其中，约束逼真程度的D可以和原始GAN一样直接分类图片就好，约束匹配程度的D，真样本是文字和匹配的真图，假样本是文字和生成图片，应该也还需要文字+不匹配的真图？总结来说这种架构的好处是利用分支任务监督生成真图，图片逼真的话loss开始减小，可能一定程度上缓解了原始的CGAN在生成文字+不匹配的真图时loss依然很高的问题。</p>
+<p>例子：<br>如下图<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-54-34.png" class=""><br>指定建筑物的大致外观作为约束条件，要求将产生外观相近的带有细节的建筑物图片。<br>按照condition GAN的做法直接训练，但是产生的建筑物可能带有部分细节不太真实，例如最下方的第三个图中左上角有烟囱图形，考虑在condition GAN的原始loss上增加一个普通的图像均方差（当然，需要有平行数据），最终效果改善明显。另一个实做遇到的问题是，产生的图片尺寸较大，模型参数多，收敛时间长或者难以收敛，因为此时模型可能有办法产生细节上合理的图片但是整体构图有问题，此时仍然得不到好的反馈，因此引入分层的想法，即使用小的判别器判断局部细节是否足够真实，大的判别器判断整体构图是否和谐，如下：<br><img src="/2020/02/06/%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C/2020-02-06-22-54-44.png" class=""></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/" rel="next" title="各样各式的GAN——infoGAN, VAE-GAN, BiGAN">
+                <i class="fa fa-chevron-left"></i> 各样各式的GAN——infoGAN, VAE-GAN, BiGAN
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/02/06/%E5%90%84%E5%BC%8F%E5%90%84%E6%A0%B7%E7%9A%84gan-wgan-and-ebgan/" rel="prev" title="各式各样的GAN——WGAN，EBGAN">
+                各式各样的GAN——WGAN，EBGAN <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">MioKinHuang</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#引言"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-introduction"><span class="nav-number">1.1.</span> <span class="nav-text">1. introduction</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-推导"><span class="nav-number">1.2.</span> <span class="nav-text">2. 推导</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#极大似然和KL散度"><span class="nav-number">1.2.1.</span> <span class="nav-text">极大似然和KL散度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GAN中衡量两个分布的差距"><span class="nav-number">1.2.2.</span> <span class="nav-text">GAN中衡量两个分布的差距</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Conditional-GAN"><span class="nav-number">1.3.</span> <span class="nav-text">3. Conditional GAN</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MioKinHuang</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

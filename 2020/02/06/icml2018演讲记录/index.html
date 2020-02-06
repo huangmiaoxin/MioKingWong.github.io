@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="引言本文是记录一下 ICML2018 上的演讲，讲解的东西比这个稍多，按照分类目录，将深度学习的基本理论相关的部分放在本文。 尝试理解网络  从优化的角度来看，深度网络作为一个映射工具，将输入映射到输出，在输出端，使用一些衡量差距的算式，计算出输出和期望输出的差距，然后用优化方法来矫正输出，使得输出和期望的输出接近。不过，这种优化和传统的凸优化是不同的，基本上，我们面对的问题常常是很难保证是凸的，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ICML2018演讲记录-深度学习基础理论">
+<meta property="og:url" content="https://huangmiaoxin.github.io/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/index.html">
+<meta property="og:site_name" content="MioKinHuang &#39;s Blog">
+<meta property="og:description" content="引言本文是记录一下 ICML2018 上的演讲，讲解的东西比这个稍多，按照分类目录，将深度学习的基本理论相关的部分放在本文。 尝试理解网络  从优化的角度来看，深度网络作为一个映射工具，将输入映射到输出，在输出端，使用一些衡量差距的算式，计算出输出和期望输出的差距，然后用优化方法来矫正输出，使得输出和期望的输出接近。不过，这种优化和传统的凸优化是不同的，基本上，我们面对的问题常常是很难保证是凸的，">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-57-20.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-57-30.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-57-40.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-57-57.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-58-07.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-58-19.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-58-45.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-58-54.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-59-05.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-59-19.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-59-41.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-00-02.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-01-21.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-01-39.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-01-54.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-02-05.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-02-15.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-02-31.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-02-39.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-02-54.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-03-03.png">
+<meta property="article:published_time" content="2020-02-06T13:52:25.000Z">
+<meta property="article:modified_time" content="2020-02-06T14:09:50.008Z">
+<meta property="article:author" content="MioKinHuang">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://huangmiaoxin.github.io/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-57-20.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://huangmiaoxin.github.io/2020/02/06/icml2018演讲记录/"/>
+
+
+
+
+
+  <title>ICML2018演讲记录-深度学习基础理论 | MioKinHuang 's Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">MioKinHuang 's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huangmiaoxin.github.io/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MioKinHuang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MioKinHuang 's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ICML2018演讲记录-深度学习基础理论</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-06T21:52:25+08:00">
+                2020-02-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%9B%B8%E5%85%B3%E7%90%86%E8%AE%BA/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习相关理论</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>本文是记录一下 <strong>ICML2018</strong> 上的演讲，讲解的东西比这个稍多，按照分类目录，将深度学习的基本理论相关的部分放在本文。</p>
+<h3 id="尝试理解网络"><a href="#尝试理解网络" class="headerlink" title="尝试理解网络"></a>尝试理解网络</h3><img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-57-20.png" class="">
+<img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-57-30.png" class="">
+<p>从优化的角度来看，深度网络作为一个映射工具，将输入映射到输出，在输出端，使用一些衡量差距的算式，计算出输出和期望输出的差距，然后用优化方法来矫正输出，使得输出和期望的输出接近。<br>不过，这种优化和传统的凸优化是不同的，基本上，我们面对的问题常常是很难保证是凸的，常规的优化器容易导致搜索到局部最优点。（可能经过设计的优化器有概率会跳过局部最优，前往更优点？）<br><img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-57-40.png" class=""><br>讨论的点如上图：</p>
+<ol>
+<li>面对一个非凸问题，如何使用梯度下降法或者其他变形方法寻找更优点？</li>
+<li>深度网络的参数量常常是很大的，而传统的一些统计的方法告诉我们，参数量远大于样本数量时，基本会带来严重的过拟合问题，但是，现在我们看到，网络的方法泛化能力很强。</li>
+<li>深度网络中，深度到底起什么作用？</li>
+<li>探讨一些关于无监督的方法和GAN</li>
+<li>是否有更简单的方法取代部分网络的模块，这种简单是指我们知道他的原理，可以方便的根据实际使用效果作分析和改进。</li>
+</ol>
+<h4 id="1-optimization-problem"><a href="#1-optimization-problem" class="headerlink" title="1. optimization problem"></a>1. optimization problem</h4><img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-57-57.png" class="">
+<p>深度网络中的优化问题多数属于非凸。<br><img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-58-07.png" class=""><br>实际上，很难设计优化器去跳出局部最优，朝着全局最优去进化。<br>我们想另一个问题，放弃一般性问题，即放弃随机初始化，是否能找到一些起始点，能证明从这些起始点开始迭代就能达到全局最优。<br><strong>高维度的诅咒</strong><br><img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-58-19.png" class=""><br>关于高维，有一个比较违背直觉的结论：<br>针对一个$d$维度的空间，在其中一定能找到数量级在$e^d$的若干个具体的向量，这些向量中，任意两个之间的夹角大于60度。<br>由此推出另一个更加普适的结论是：<br>针对一个$d$维度的空间，在其中一定能找到数量级在$e^{d/\epsilon }$的若干个具体的向量，这些向量中，任意两个之间的夹角大于$\epsilon$度。<br>这除了说明高维空间非常大之外，其实更重要的，假如我们按照一个精度$\epsilon$将空间离散为若干份，其中一个是最优方案，即参数空间中使得loss最小的那个最优解，我们寻找到这个最优解的过程是很艰难的，因为离散之后的向量数量级高达$e^{d/\epsilon }$。<br>如果我们能具体地知道参数空间和loss之间的映射关系构成的超平面，则可能不需要在一个高达$e^{d/\epsilon }$空间中穷尽地搜索，但实际上这个超平面是真的不知道。<br>另外补充一点：关于深度网络的黑盒。如果单纯从输入到输出，输出端用一个优化方法这一点来看，深度网络倒是完全不像黑盒。我们平时说的深度网络是一个黑盒，说的是这个超平面很难知道，即从输入到输出很难把握他的数学性质，也就无法求解参数，最后选择了忽视这些性质，直接做任务驱动的端到端求解。</p>
+<p>至此，我们承认，现在没有什么好方法能在一个未知的超平面中寻找全局最优解。</p>
+<p>下面简单分析一下在一个未知的超平面中做梯度下降法的问题。<br><img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-58-45.png" class=""><br><img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-58-54.png" class=""><br>我们经常使用的梯度下降法是计算出loss函数$f(\theta) $的梯度$\theta _t$，然后执行$\theta _{k} = \theta _{k-1} - \eta \Delta f(\theta)$更新参数值。这样做的道理是根据梯度的反方向可以知道函数下降的方向，但是不确定需要走多大的步伐，因为在极小的一个局部，梯度反方向可以确定函数的下降方向，但是步子迈得太大，迈出了该区域则可能函数反而是上升的。可以证明，应该迈多大的步伐取决于海塞矩阵的边界。直观理解就是，二阶导数决定了一阶导数的变化程度，而在极小的区域内，一阶导数可以近似函数的曲线幅度，如果二阶导数较大，将导致本次的一阶导数较大，一个较小的学习率$\eta$就可能导致函数横坐标超出有效的小区域。所以学习率应该是和二阶导数呈负相关的关系。</p>
+<p>以上是基础做法，可能带来的问题其实也很多，比如：</p>
+<ol>
+<li><p>鞍点问题：</p>
+<img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-59-05.png" class="">
+<p>鞍点的示意图如上图所示。以上做法实际上在求取梯度为0的点，鞍点同样是梯度为0的点，但是可以看到，鞍点并不是一个局部最小值。<br>paper《add noise to gradient》提出了一种能对付鞍点问题的方案。扰动的梯度下降法(perturbed gradient descend)<br>实际上，我们不需要在训练的时候引入噪声的，因为基于batch的随机梯度下降法本身就会带来不确定噪声，这些噪声作为扰动，已经可以帮助优化器脱离鞍点。</p>
+</li>
+<li><p>速度问题<br>我们知道，一阶优化的收敛速度慢于二阶优化器。二阶优化在传统的一些图优化问题其实是用的比较多的了，那么对于深度学习是否也可以直接设计高阶优化器呢？</p>
+<img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-59-19.png" class="">
+<p>二阶优化方法也称为牛顿法(Newton Method)。<br>实际上，原始的牛顿法是来自于方程求根问题。<br>考虑方程求根问题：即要求$f(x)=0$的解。<br>数值球迭代求解中，需要先做近似，考虑在点$x_0$附近做一阶的泰勒展开：</p>
+<script type="math/tex; mode=display">
+f(x)\approx f(x_0)+f'(x_0)(x-x_0)=0</script><p>故$x = x_0 - \frac{f(x_0)}{f’(x_0)}$，由此可以得到迭代式：$x_k=x_{k-1} - \frac{f(x_{k-1})}{f’(x_{k-1})}$，迭代式需要给定一个初始值$x_0$，初始值不需要严格限定范围。<br>可以看到，从理论数学的角度看，牛顿法需要保证取到的点都有导数值并且导数值不为0，这需要知道函数f的具体导数，才能完成求解。而实际操作中，可能并不知道函数f的导数形式，无法代入具体的$x_{k-1}$去计算导数值，这种情况下常常会使用一个近似处理，即使用前两次计算的点来近似计算导数，故迭代式变为：$x_k=x_{k-1} - \frac{x_{k-1}-x_{k-2}}{f(x_{k-1})-f(x_{k-2})} f(x_{k-1})$，这被形象地称为’割线法’。<br>我们知道，优化loss函数$g(x)$的时候，是在寻找一个参数值使得loss处于极小值点，即$g’(x)=0$，考虑使用牛顿法求解的话，此处的$g’(x)=f(x)$，故迭代式为：</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+x_k=x_{k-1} - \frac{g'(x_{k-1})}{g''(x_{k-1})}
+\label{1}
+\end{equation}</script><p>考虑到x是高维向量的情况，加上一个学习率$eta$，则式子(1)变为：</p>
+<script type="math/tex; mode=display">
+x_{k} = x_{k-1} - \eta {\Delta ^2 f(x)}^{-1} \Delta f(x)</script><p>这就是二阶方法做优化的迭代式。<br>这里面涉及到的计算，一个是梯度，这个我们在一阶优化中也需要算，另一个是二阶导数的导数，在这里体现为海塞矩阵的逆阵。94年，Paul等人证明了海塞矩阵可以在线性时间内求解，但是这里需要的是海塞矩阵的逆阵，当维度较高时这是一个非常棘手的问题。后来，又陆续有工作证明了，可以使用一些近似的方法来高效地计算海塞矩阵的逆阵（思路应该类似于割线法？）。这让二阶优化看到了新希望。<br>但是非常遗憾，人们在尝试了二阶优化器之后，发现训练出来的深度网络的效果要差于普通的一阶梯度下降方法训练出来的结果。<br>下面分别附一个随机梯度下降法和一个牛顿法的示意图，全部源自网络。</p>
+<img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-21-59-41.png" class="">
+<p>(SGD示意图)</p>
+<img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-00-02.png" class="">
+<p>（牛顿法示意图）</p>
+</li>
+<li><p>尝试打开黑盒</p>
+<img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-01-21.png" class="">
+<img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-01-39.png" class="">
+<p>18年有paper《Spurious Local Minima are Common in Two-Layer ReLU Neural Networks》证明了，针对比较简单的单隐层全连接网络，如果使用ReLU激活函数的话，那么当各层的维度$k$处于$6 \lt k \lt 20$时，难以保证参数平面是凸的，但是当k超过这个范围时，特别是当k较大时，是能这证明该参数平面的局部最优等价于全局最优的。从这个角度看，其实我们已经能打开普通的三层神经网络这个黑盒了。<br>但是，对于更多层的深度网络，目前没有新的研究进展。当前的研究最多的是停留在假设没有激活函数的情况，但是这样其实研究意义不大。因为不带有激活函数的多层神经网络其实也就等价于单层。</p>
+</li>
+</ol>
+<h4 id="3-overparameterization-and-generalization-theory"><a href="#3-overparameterization-and-generalization-theory" class="headerlink" title="3. overparameterization and generalization theory"></a>3. overparameterization and generalization theory</h4><ol>
+<li>加多参数量降低优化难度<img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-01-54.png" class="">
+有一个有趣的现象：如上图，假如随机初始化一个深度网络，然后随机输入一些向量，产生一些输出，当做labels，然后将这些输入和对应的输出固定为训练pair。此时使用另一个一模一样结构的网络，只是参数随机初始化，这时会发现，要拟合这些pair常常是很困难的。但是如果增加多一点参数，将使得拟合顺利得多。<br>另一个现象如下图：<img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-02-05.png" class="">
+我们想象中，随着训练次数的增加，训练集的loss会一直下降，但是测试集或者验证集的loss将应为随之而来的过拟合的发生，会先下降后上升。但实际中，对于深度网络，过拟合似乎不是那么明显。<br>关于这一点，其实传统的线性模型也有。<img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-02-15.png" class="">
+可以证明，线性模型的‘容量’正比于模型参数数量d的对数，反比于模型设定的距离y的平方。<br>衡量模型容量的方法：<img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-02-31.png" class="">
+<img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-02-39.png" class="">
+</li>
+</ol>
+<h4 id="4-role-of-depth"><a href="#4-role-of-depth" class="headerlink" title="4. role of depth"></a>4. role of depth</h4><p>和前面一篇博文《深度学习中网络拟合能力和网络深度的理论分析》雷同，就不浪费篇幅了。。</p>
+<h4 id="5-generative-model-and-GAN"><a href="#5-generative-model-and-GAN" class="headerlink" title="5. generative model and GAN"></a>5. generative model and GAN</h4><img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-02-54.png" class="">
+<p>一开始人们考虑生成模型的时候，是直接重构图片，这样导致了生成的图片非常模糊，而且图片与图片之间的插值不是正常的图片，产生了严重的重影。以人脸生成为例，中间插值的图片可能是多张人脸的叠加，模糊而且看起来很诡异，并不是真正的产生了人脸。<br><img src="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/2020-02-06-22-03-03.png" class=""><br>于是一个新的思路是GAN。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/02/06/%E6%9E%81%E5%A4%A7%E4%BC%BC%E7%84%B6%E4%BC%B0%E8%AE%A1%E5%92%8C%E6%9C%80%E5%A4%A7%E5%90%8E%E9%AA%8C%E6%A6%82%E7%8E%87%E4%BC%B0%E8%AE%A1/" rel="next" title="极大似然估计和最大后验概率估计的深入理解">
+                <i class="fa fa-chevron-left"></i> 极大似然估计和最大后验概率估计的深入理解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/02/06/%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B/" rel="prev" title="遣词造句的规律，人类语言的奥秘——语言模型">
+                遣词造句的规律，人类语言的奥秘——语言模型 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">MioKinHuang</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#引言"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#尝试理解网络"><span class="nav-number">1.1.</span> <span class="nav-text">尝试理解网络</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-optimization-problem"><span class="nav-number">1.1.1.</span> <span class="nav-text">1. optimization problem</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-overparameterization-and-generalization-theory"><span class="nav-number">1.1.2.</span> <span class="nav-text">3. overparameterization and generalization theory</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-role-of-depth"><span class="nav-number">1.1.3.</span> <span class="nav-text">4. role of depth</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-generative-model-and-GAN"><span class="nav-number">1.1.4.</span> <span class="nav-text">5. generative model and GAN</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MioKinHuang</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

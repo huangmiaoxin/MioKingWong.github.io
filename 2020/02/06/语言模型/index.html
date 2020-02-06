@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="引言普遍意义上的自然语言处理中的语言是指人类之间沟通交流的工具，具体形式上可以有文本和语音等多种表现形式。语言携带信息的方式随着人类群体的的不断进化和发展而逐渐变得丰富，同时也变得极为复杂，以至于到了近现代社会人类自身都很难概括出理解文本语义信息需要经历的逻辑变换过程。加上现代计算机体系和人脑运作体系的差别较大，人类难以将自身对语言的理解过程直接转化为计算机程式，因此演化出了自然语言处理这个计算机">
+<meta property="og:type" content="article">
+<meta property="og:title" content="遣词造句的规律，人类语言的奥秘——语言模型">
+<meta property="og:url" content="https://huangmiaoxin.github.io/2020/02/06/%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B/index.html">
+<meta property="og:site_name" content="MioKinHuang &#39;s Blog">
+<meta property="og:description" content="引言普遍意义上的自然语言处理中的语言是指人类之间沟通交流的工具，具体形式上可以有文本和语音等多种表现形式。语言携带信息的方式随着人类群体的的不断进化和发展而逐渐变得丰富，同时也变得极为复杂，以至于到了近现代社会人类自身都很难概括出理解文本语义信息需要经历的逻辑变换过程。加上现代计算机体系和人脑运作体系的差别较大，人类难以将自身对语言的理解过程直接转化为计算机程式，因此演化出了自然语言处理这个计算机">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B/2020-02-06-22-28-02.png">
+<meta property="article:published_time" content="2020-02-06T14:10:32.000Z">
+<meta property="article:modified_time" content="2020-02-06T14:28:43.291Z">
+<meta property="article:author" content="MioKinHuang">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://huangmiaoxin.github.io/2020/02/06/%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B/2020-02-06-22-28-02.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://huangmiaoxin.github.io/2020/02/06/语言模型/"/>
+
+
+
+
+
+  <title>遣词造句的规律，人类语言的奥秘——语言模型 | MioKinHuang 's Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">MioKinHuang 's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huangmiaoxin.github.io/2020/02/06/%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MioKinHuang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MioKinHuang 's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">遣词造句的规律，人类语言的奥秘——语言模型</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-06T22:10:32+08:00">
+                2020-02-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index">
+                    <span itemprop="name">其他</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h3><p>普遍意义上的自然语言处理中的语言是指人类之间沟通交流的工具，具体形式上可以有文本和语音等多种表现形式。语言携带信息的方式随着人类群体的的不断进化和发展而逐渐变得丰富，同时也变得极为复杂，以至于到了近现代社会人类自身都很难概括出理解文本语义信息需要经历的逻辑变换过程。加上现代计算机体系和人脑运作体系的差别较大，人类难以将自身对语言的理解过程直接转化为计算机程式，因此演化出了自然语言处理这个计算机科学的子领域。自然语言处理的主要目的是通过统计学习的方法使计算机能接收和处理文本，从中提取出文本表达的信息。其中，语言模型是自然语言处理的基础。本文将介绍语言模型的相关理论和一些重要工作。</p>
+<h3 id="语言模型定义与求解"><a href="#语言模型定义与求解" class="headerlink" title="语言模型定义与求解"></a>语言模型定义与求解</h3><p>一个句子S通常被看作由一系列词语元素$w_i$构成的有序序列，即$S=w_1w_2w_3…w_N$。语言模型认为某种语言体系下的所有句子构成一个概率分布，每个句子对应的概率$p(S)$表示该句子的出现概率。<br>语言模型的基本任务就是估计每个句子的出现概率，如公式\eqref{eq:lm_ps}所示：</p>
+<script type="math/tex; mode=display">
+P(S) = P(w_1w_2w_3...w_N)</script><p>利用条件概率，可以将公式转换如下：</p>
+<script type="math/tex; mode=display">
+P(w_1w_2w_3...w_N) = P(w_1)P(w_2|w_1)P(w_3|w_1w_2)…P(w_N|w_1w_2w_3…w_{N-1})</script><p>因此，根据该公式，要估计一个句子$S$的出现概率，只需要预先在一个大型语料库中，分别统计出条件概率$P(w_i|w_1w_2w_3…w_{i-1})$，再将所有结果累乘即可。该过程利用了伯努利大数定理（当频次<strong>足够高</strong>时，频率趋近于概率），如下面公式所示：</p>
+<script type="math/tex; mode=display">
+P(w_i|w_1w_2w_3…w_{i-1})\approx \frac{\text{Count}(w_1w_2w_3…w_{i-1}w_i)}{\text{Count}(w_1w_2w_3…w_{i-1})}</script><p>在实际操作中，当$i$较大时，句子$S$的前$i$个元素构成的前缀子序列$S_i=w_1w_2w_3…w_{i-1}w_i$往往非常稀疏，导致大数定理失效，因此很难直接使用公式\eqref{eq:lm_pwi}估计条件概率$P(w_i|w_1w_2w_3…w_{i-1})$。Jelinek<sup><a href="#fn_Jelinek1980interpolated" id="reffn_Jelinek1980interpolated">Jelinek1980interpolated</a></sup>提出一种近似算法。基于Markov假设，即子序列$w_1w_2w_3…w_{i-1}w_i$中，$w_i$元素只依赖于前$k$个元素，故公式\eqref{eq:lm_pwi}可以改写为：</p>
+<script type="math/tex; mode=display">
+P(w_i|w_1w_2w_3…w_{i-1}) = P(w_i|w_{i-k}…w_{i-2}w_{i-1})\approx \frac{\text{Count}(w_{i-k}…w_{i-2}w_{i-1}w_i)}{\text{Count}(w_{i-k}…w_{i-2}w_{i-1})}</script><p>一般情况下，$k$取值定为2。利用上面的公式进行语料库统计不仅可以解决子序列前缀子序列$S_i$稀疏的问题，较短序列的匹配也使得统计过程的计算量大大降低。</p>
+<h3 id="神经语言模型"><a href="#神经语言模型" class="headerlink" title="神经语言模型"></a>神经语言模型</h3><p>传统的统计语言模型使用上面最后一个公式所示的方法进行求解。该方法在大多数任务场景下表现良好，但是当给定的句子中某些序列片段未在语料库出现或者出现次数较少时，针对该部分的条件概率估计将会出现较大偏差。过去的研究工作设计了多种平滑方法<sup><a href="#fn_katz1987estimation" id="reffn_katz1987estimation">katz1987estimation</a></sup>来针对统计频数较少的序列片段进行平滑修正，但通过人工规则定义的平滑算法有较大的适用局限。同时，由于统计语言模型基于Markov假设，这导致模型只关注目标元素之前的若干元素，无法和更多的元素建立长时依赖关系。为了解决上述问题，Mikolov等人<sup><a href="#fn_mikolov2010recurrent" id="reffn_mikolov2010recurrent">mikolov2010recurrent</a></sup>提出了基于循环神经网络的语言模型RNNLM。其模型结构示意图如下图所示：<br><img src="/2020/02/06/%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B/2020-02-06-22-28-02.png" class=""><br>RNNLM将<strong>循环神经网络作为一个在设定误差之内能拟合任意连续函数<sup><a href="#fn_nn_as_func_appro" id="reffn_nn_as_func_appro">nn_as_func_appro</a></sup>的工具</strong>，用来端到端地学习一个<strong>从前缀子序列$S_{i-1}=w_1w_2w_3…w_{i-1}$到条件概率$P(w_i|w_1w_2w_3…w_{i-1})$的映射关系</strong>。下面以LSTM为例阐述神经语言模型的数学描述，如下两个公式所示：</p>
+<script type="math/tex; mode=display">
+h_t = \text{LSTM}(h_{t-1}, x_t)</script><script type="math/tex; mode=display">
+p_t = \text{softmax}(W^{\text{LM}} h_t)</script><p>公式中的$\text{LSTM}$函数表示对于给定的序列元素$x_t$和$h^x_{t-1}$，使用LSTM的迭代公式计算出$h^x_{t}$。特别地，对于0时刻的$h^x_{0}$一般直接初始化为一个固定向量，神经语言模型中采用零向量。公式$p_t$将时刻$t$的LSTM网络输出投影到下一个元素的预测概率空间上，按照极大似然思想构建损失函数训练该模型，如下公式所示：</p>
+<script type="math/tex; mode=display">
+loss_{LM} = - \frac{1}{|D|}\sum _{S \in D} \sum_{t=1}^N V_{w_{t+1}} \text{log } p_t</script><p>其中$V_{w_{t+1}}$表示第$t+1$个词典单词对应的one-hot向量。句子序列$S=w_1w_2w_3…w_N$是训练集$D$的一个样本实例。总的来看，该公式是使用交叉熵函数计算句子序列$S$的拟合误差，然后按照极大似然估计的思想将训练集的所有样本误差求和，作为整个训练集的拟合误差。最后按照梯度下降法对上述式子进行优化，得到最终的神经网络语言模型。</p>
+<h3 id="语言模型和句子可读性"><a href="#语言模型和句子可读性" class="headerlink" title="语言模型和句子可读性"></a>语言模型和句子可读性</h3><p>一个句子可以看做是由词或字等基本元素构成的有序序列。句子的可读性从直观上来说是其元素排列符合语言语法的程度，本质上说是句子的出现概率。因此可以考虑使用语言模型来对一个句子的可读性进行打分。</p>
+<p>神经语言模型如上图所示，输入的句子序列是“天气好。”，加上起始符号$\text{<sos>}$一起作为输入序列，每个元素依次输入，然后依次预测下一个元素。一般来说，一个训练好的语言模型能正确预测下一个元素。如上图所示，当输入元素为“天”时，对应的输出元素应当是“气”，此时输出概率分布中，最大概率的输出元素是红色部分对应的词典元素“气”。该句子的可读性即是将所有红色部分的概率累乘起来，表示这句话的通顺程度。</p>
+<h3 id="tips"><a href="#tips" class="headerlink" title="tips"></a>tips</h3><ol>
+<li>神经语言模型中使用的RNN单元必须是单向的，因为训练过程是使用前文序列预测下一个单词的过程。假如使用双向RNN的话模型会利用到前文序列之后的信息，自然可以作弊得到前文序列的下一个单词。</li>
+<li>语言模型的评估指标常用困惑度，按照定义，这等价于句子可读性计算中提到的概率乘积的倒数。在实际操作中，概率累乘的过程可能会出现浮点数过小溢出，为了安全起见可以转化成对概率取对数再相加，最后再对加和的结果取指数。</li>
+</ol>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><blockquote id="fn_mikolov2010recurrent">
+<sup>mikolov2010recurrent</sup>.  Mikolov T, Karafiát M, Burget L, et al. Recurrent neural network based language model. Eleventh annual conference of the international speech communication association, 2010.<a href="#reffn_mikolov2010recurrent" title="Jump back to footnote [mikolov2010recurrent] in the text."> &#8617;</a>
+</blockquote>
+<blockquote id="fn_katz1987estimation">
+<sup>katz1987estimation</sup>.  Katz S. Estimation of probabilities from sparse data for the language model component of a speech recognizer. IEEE transactions on acoustics, speech, and signal processing, 1987, 35(3):400–401.<a href="#reffn_katz1987estimation" title="Jump back to footnote [katz1987estimation] in the text."> &#8617;</a>
+</blockquote>
+<blockquote id="fn_nn_as_func_appro">
+<sup>nn_as_func_appro</sup>.  Hornik K. Approximation capabilities of multilayer feedforward networks. Neural networks, 1991, 4(2):251–257.<a href="#reffn_nn_as_func_appro" title="Jump back to footnote [nn_as_func_appro] in the text."> &#8617;</a>
+</blockquote>
+<blockquote id="fn_hochreiter1997long">
+<sup>hochreiter1997long</sup>. Hochreiter S, Schmidhuber J. Long short-term memory. Neural computation, 1997, 9(8):1735–1780.<a href="#reffn_hochreiter1997long" title="Jump back to footnote [hochreiter1997long] in the text."> &#8617;</a>
+</blockquote>
+<blockquote id="fn_cho2014learning">
+<sup>cho2014learning</sup>.  Cho K, Van Merriënboer B, Gulcehre C, et al. Learning phrase representations using rnn encoderdecoder for statistical machine translation. arXiv preprint arXiv:1406.1078, 2014.<a href="#reffn_cho2014learning" title="Jump back to footnote [cho2014learning] in the text."> &#8617;</a>
+</blockquote>
+<blockquote id="fn_schuster1997bidirectional">
+<sup>schuster1997bidirectional</sup>.  Schuster M, Paliwal K K. Bidirectional recurrent neural networks. IEEE Transactions on Signal Processing, 1997, 45(11):2673–2681.<a href="#reffn_schuster1997bidirectional" title="Jump back to footnote [schuster1997bidirectional] in the text."> &#8617;</a>
+</blockquote>
+<blockquote id="fn_graves2005framewise">
+<sup>graves2005framewise</sup>.  Graves A, Schmidhuber J. Framewise phoneme classification with bidirectional lstm and other neural network architectures. Neural Networks, 2005, 18(5-6):602–610.<a href="#reffn_graves2005framewise" title="Jump back to footnote [graves2005framewise] in the text."> &#8617;</a>
+</blockquote>
+<blockquote id="fn_Jelinek1980interpolated">
+<sup>Jelinek1980interpolated</sup>.  Jelinek F, Mercer R L. Interpolated estimation of markov source parameters from sparse data. Pattern Recognition in Practice, 1980.<a href="#reffn_Jelinek1980interpolated" title="Jump back to footnote [Jelinek1980interpolated] in the text."> &#8617;</a>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/02/06/icml2018%E6%BC%94%E8%AE%B2%E8%AE%B0%E5%BD%95/" rel="next" title="ICML2018演讲记录-深度学习基础理论">
+                <i class="fa fa-chevron-left"></i> ICML2018演讲记录-深度学习基础理论
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/02/06/%E5%90%84%E6%A0%B7%E5%90%84%E5%BC%8F%E7%9A%84GAN/" rel="prev" title="各样各式的GAN——infoGAN, VAE-GAN, BiGAN">
+                各样各式的GAN——infoGAN, VAE-GAN, BiGAN <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">MioKinHuang</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#引言"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#语言模型定义与求解"><span class="nav-number">2.</span> <span class="nav-text">语言模型定义与求解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#神经语言模型"><span class="nav-number">3.</span> <span class="nav-text">神经语言模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#语言模型和句子可读性"><span class="nav-number">4.</span> <span class="nav-text">语言模型和句子可读性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tips"><span class="nav-number">5.</span> <span class="nav-text">tips</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考文献"><span class="nav-number">6.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MioKinHuang</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
