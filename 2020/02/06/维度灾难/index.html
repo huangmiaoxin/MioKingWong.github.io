@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="引言本文是关于高维情况下的一些场景特征。主要是从两个论文入手介绍高维空间的一些特点。本质上，神经网络的参数空间极为庞大，也拥有高维空间的一些特点和问题。本文第一篇论文阅读其实不算高维问题，就算一个引入，着重介绍第二篇论文。 1. High-dimensional Feature and Its Efficient compression for face verificationCVPR2013，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="高维场景下的维度灾难与高维统计方法">
+<meta property="og:url" content="https://huangmiaoxin.github.io/2020/02/06/%E7%BB%B4%E5%BA%A6%E7%81%BE%E9%9A%BE/index.html">
+<meta property="og:site_name" content="MioKinHuang &#39;s Blog">
+<meta property="og:description" content="引言本文是关于高维情况下的一些场景特征。主要是从两个论文入手介绍高维空间的一些特点。本质上，神经网络的参数空间极为庞大，也拥有高维空间的一些特点和问题。本文第一篇论文阅读其实不算高维问题，就算一个引入，着重介绍第二篇论文。 1. High-dimensional Feature and Its Efficient compression for face verificationCVPR2013，">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%BB%B4%E5%BA%A6%E7%81%BE%E9%9A%BE/2020-02-06-21-17-55.png">
+<meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%BB%B4%E5%BA%A6%E7%81%BE%E9%9A%BE/2020-02-06-21-18-30.png">
+<meta property="article:published_time" content="2020-02-06T13:09:41.000Z">
+<meta property="article:modified_time" content="2020-02-06T13:25:40.212Z">
+<meta property="article:author" content="MioKinHuang">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://huangmiaoxin.github.io/2020/02/06/%E7%BB%B4%E5%BA%A6%E7%81%BE%E9%9A%BE/2020-02-06-21-17-55.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://huangmiaoxin.github.io/2020/02/06/维度灾难/"/>
+
+
+
+
+
+  <title>高维场景下的维度灾难与高维统计方法 | MioKinHuang 's Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">MioKinHuang 's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huangmiaoxin.github.io/2020/02/06/%E7%BB%B4%E5%BA%A6%E7%81%BE%E9%9A%BE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MioKinHuang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MioKinHuang 's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">高维场景下的维度灾难与高维统计方法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-06T21:09:41+08:00">
+                2020-02-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">论文阅读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>本文是关于高维情况下的一些场景特征。主要是从两个论文入手介绍高维空间的一些特点。本质上，神经网络的参数空间极为庞大，也拥有高维空间的一些特点和问题。本文第一篇论文阅读其实不算高维问题，就算一个引入，着重介绍第二篇论文。</p>
+<h5 id="1-High-dimensional-Feature-and-Its-Efficient-compression-for-face-verification"><a href="#1-High-dimensional-Feature-and-Its-Efficient-compression-for-face-verification" class="headerlink" title="1. High-dimensional Feature and Its Efficient compression for face verification"></a>1. High-dimensional Feature and Its Efficient compression for face verification</h5><p>CVPR2013，微软孙剑组的人脸识别论文，主要提出了一种获取高维的特征描述子的方法，并对描述子进行降维，便于计算特征点的相似度。其实这不太像严格意义的高维统计。<br>算法：<br>文章从人脸识别的基本步骤入手：提取特征描述子和根据特征计算人脸相似度。从提取描述子入手，按照经验，越多的特征点可以使效果提高，使用现有的成果，dense facial lankmark with alignment，外加多尺度的金字塔变换得到的描述子，一起拼接起来，得到一个高维的描述子(100k dimension)，接下来需要进行降维和并计算向量相似度。<br>降维分为两个步骤：</p>
+<ol>
+<li>先对描述子$P$进行PCA，去除部分噪声干扰，得到$P$；</li>
+<li>对$Y$进行进一步降维，因为需要存储一个很大的降维矩阵，为了test阶段的存储和计算方便，人工约束这个转换矩阵稀疏。因此，得到优化目标：<script type="math/tex; mode=display">
+min_B |Y-B^TX|_2^2+\lambda |B|</script>可以看到，优化目标分为两个，一个是重构误差，一个是降维矩阵B的稀疏约束，可以视为一个正则化。<br>上式要求降维矩阵的稀疏性，这个约束可能是过强的。另外，实际上，由于常用的欧拉距离，余弦距离等距离度量方式都有旋转不变性，故可以考虑在$Y$上加多一些自由度，即加上一个旋转矩阵，增多一些可能性，对冲矩阵$B$带来的约束。上式变为：<script type="math/tex; mode=display">
+min_B |R^TY-B^TX|_2^2+\lambda |B|</script>上式相比于1式，增加多了一个旋转自由度，在原paper中自称为Rotated Sparse Regression。</li>
+</ol>
+<p>求解：<br>求解这个目标函数。使用梯度下降的普遍解法进行优化可能也会得到结果，但结合这个具体的解析式分析一下，可以得到更优的解法。首先，在旋转矩阵R或者降维矩阵B固定其中之一的时候，目标函数是凸函数。故可以考虑对R和B异步优化，即：</p>
+<ol>
+<li>固定旋转矩阵R，优化降维矩阵B，初始化时R初始为单位阵I即可，直接用普遍的优化方式进行优化；</li>
+<li>固定降维矩阵B，优化旋转矩阵R，此时优化目标如下：<script type="math/tex; mode=display">
+min_R |R^TY-B^TX|_2^2</script>这个式子有闭式解，对$YX^TB$进行SVD，得到$UDV^T$，便得到$R=UV^T$。</li>
+</ol>
+<p>重复步骤1，2最终得到优化解。</p>
+<h5 id="2-Dimensionality’s-Blessing-Clustering-Images-by-Underlying-Distribution"><a href="#2-Dimensionality’s-Blessing-Clustering-Images-by-Underlying-Distribution" class="headerlink" title="2. Dimensionality’s Blessing: Clustering Images by Underlying Distribution"></a>2. Dimensionality’s Blessing: Clustering Images by Underlying Distribution</h5><p>这个paper在cvpr一众基于深度网络的方法中显得非常与众不同，使用的方法属于 <strong>高维统计(high-dimensional statistics)</strong> 。总体来说，作者推导了一个根据图像的潜在分布来判断图像是否相似，进而完成聚类的算法。<br>图像聚类，不辅助外部监督信息的情况下，严格来说目前学术界做出来的效果其实没有很好，一些相同的场景在转换了相机的倾角之后，得到的图像甚至都会被认为是不同的景物。<br>考虑从思考图像的本质入手。<br>首先，图像来自于相机，产生一个图像的因素包括，相机的在地球中的位置，相机的倾角，天气条件，阳光的猛烈程度，相机中传感器的噪声等等，这些因素视为随机变量，他们各自拥有一个随机分布，从这些分布中采样，综合得到一张具体的图像，故图像是这些分布中的一个具体实例。<br>作者观点是，现在直接将图像进行聚类，或者降维后聚类，或者抽取特征后进行聚类的这种做法，难以做的很好是因为：<br>a. 本质上，得到一种图像的多种分布采样出来的实例，是无法判断出每个量从哪个分布而来，影响程度多少。换句话说，产生图像数据的这些分布其实是重叠的，即数据是chaotic的(chaotic: chaotic is defined as having distributions whose mean separation is significantly smaller than their standard deviation)。如果增大feature的维度，可以减缓这种混合的影响，但是又会导致另一个问题b；<br>b. contrast-loss，即如果一个向量空间维度足够大，则向量空间中的任意两个点的距离是趋向于一个常数值的(part of the curse of dimensionality)，这个可能有点违背直觉。由于高维空间的这个特性，如果为了避免问题a而增大向量维度，则问题可能会朝b方向恶化；</p>
+<p>作者的观点是，应当增大向量空间的维度，但是可以避开问题b。相反地，可以利用高维空间的一些特性(所以题目是blessing of dimensionality)。</p>
+<p>首先看看需要利用到的高维空间的一些特性。<br>其实高维空间有一些很违背直觉的特性。之所以违背直觉是因为我们生活在三维世界里，习惯了想象一些二维或者三维的物体，而且，超过4维的世界很难直观地可视化出来。例如，在二维的平面世界中，我们直观地看到，一个正方形除去内接圆的部分，占整个正方形面积的比重比内接圆占的比重要小，在三维的立体世界中也是如此，正方体除去求解球的部分，占整个正方体体积的比重比内接球占的比重要小。但实际上，可以定量的计算出，随着二维变到三维，这个残余部分的比重在增大。实际上，这种’面积体积’的概念可以推广到d维，此时，超球体和超立方体的’超体积’的比值计算如下：</p>
+<script type="math/tex; mode=display">
+\frac{2r^d \pi^{d/2}}{d\Gamma (d/2)} = \frac{\pi^{d/2}}{d 2^{d-1}\Gamma (d/2)}</script><p>从这里可以看到，当d越来越大，这两个超体积的比值变得越来越小，当d趋向于无穷时，这个比值变成了0。这说明，在高维空间里，内接的超球体只占了整个空间的非常微小的一部分，这反映了高维空间实际上非常之空阔。</p>
+<p>在paper中，作者的说法是，在一个高维空间中，一个超球体的超体积随半径的变化是非常剧烈的，如下：</p>
+<script type="math/tex; mode=display">
+(\frac{r-\Delta r}{r})^k = (1-\frac{\Delta r}{r})^k \rightarrow 0, k \rightarrow \infty</script><p>故维度足够高的话，超球体的超体积其实都是超球体的最外层贡献的，几乎和内部无关。因此，如果从这样一个高维超球体范围内中采样一个点，该点基本就是落在球体的表面而已，因为内部空间小到可以忽略，只有无穷小的概率会采样到内部点。关于这个，作者尝试给了一个可视化图，如下：<br><img src="/2020/02/06/%E7%BB%B4%E5%BA%A6%E7%81%BE%E9%9A%BE/2020-02-06-21-17-55.png" class=""><br>从上面结论出发，作者进一步说明了，如果构成图像的所有潜在分布的维度足够高，那么从中采样一个示例出来，其实就是落在这些分布构成的超球体的表面极其‘稀薄’的一圈圆环而已，从这一点来看，一些重叠的高维分布的实例，其实并没有发生混合。示意图如下：<br><img src="/2020/02/06/%E7%BB%B4%E5%BA%A6%E7%81%BE%E9%9A%BE/2020-02-06-21-18-30.png" class=""><br>另外，因为图像的像素局部是相关的，较远距离的像素是无关的，故无法将像素之间都当做严格独立的， 于是作者又尝试说明了‘准独立’(quasi-independent)的一些特性，即在无限高维的向量中，只有有限维度的向量之间是不独立的情况。</p>
+<p>经过一番推理之后，得出结论，在准独立的情况下，高维空间中，两个向量之间的距离几乎取决于所在分布的均值和方差，和向量具体的值无关。所以，对图像聚类，需要判断两个图像向量之间的距离，转化为识别两个图像潜在分布的均值和方差。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/02/06/%E6%9D%8E%E5%AE%8F%E6%AF%85%E8%AE%BA%E6%96%87-%E5%AF%B9%E5%81%B6%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E6%96%87%E6%9C%AC%E6%91%98%E8%A6%81/" rel="next" title="论文阅读：基于对抗网络的无监督生成式文本摘要">
+                <i class="fa fa-chevron-left"></i> 论文阅读：基于对抗网络的无监督生成式文本摘要
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/02/06/%E6%9E%81%E5%A4%A7%E4%BC%BC%E7%84%B6%E4%BC%B0%E8%AE%A1%E5%92%8C%E6%9C%80%E5%A4%A7%E5%90%8E%E9%AA%8C%E6%A6%82%E7%8E%87%E4%BC%B0%E8%AE%A1/" rel="prev" title="极大似然估计和最大后验概率估计的深入理解">
+                极大似然估计和最大后验概率估计的深入理解 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">MioKinHuang</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#引言"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-High-dimensional-Feature-and-Its-Efficient-compression-for-face-verification"><span class="nav-number">1.0.0.1.</span> <span class="nav-text">1. High-dimensional Feature and Its Efficient compression for face verification</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-Dimensionality’s-Blessing-Clustering-Images-by-Underlying-Distribution"><span class="nav-number">1.0.0.2.</span> <span class="nav-text">2. Dimensionality’s Blessing: Clustering Images by Underlying Distribution</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MioKinHuang</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
