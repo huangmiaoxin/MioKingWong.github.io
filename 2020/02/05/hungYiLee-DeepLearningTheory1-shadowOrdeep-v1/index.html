@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="1. can shallow NN fit any function? 已经知道的结论是，一个单隐层fcnn而已拟合任意连续函数，那么如何证明呢？首先，在该问题场景下定义出拟合的概念，如下：假定输入的x∈[0,1]，输出y不限定，同时定义一个映射空间和k有关，则对于任意小的数$\epsilon$ ，[0,1]区间之间拟合误差的最大值需要小于该设定的$\epsilon$，因为只要误差最大值小于设定的">
+<meta name="description" content="本文大部分内容来自李宏毅老师关于深度学习理论的公开课，引用的图片来自课程ppt，按照个人理解做了一些梳理和总结。 1. can shallow NN fit any function? 已经知道的结论是，一个单隐层fcnn而已拟合任意连续函数，那么如何证明呢？首先，在该问题场景下定义出拟合的概念，如下：假定输入的x∈[0,1]，输出y不限定，同时定义一个映射空间和k有关，则对于任意小的数$\eps">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深度学习中网络拟合能力和网络深度的理论分析">
 <meta property="og:url" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/index.html">
 <meta property="og:site_name" content="MioKinHuang &#39;s Blog">
-<meta property="og:description" content="1. can shallow NN fit any function? 已经知道的结论是，一个单隐层fcnn而已拟合任意连续函数，那么如何证明呢？首先，在该问题场景下定义出拟合的概念，如下：假定输入的x∈[0,1]，输出y不限定，同时定义一个映射空间和k有关，则对于任意小的数$\epsilon$ ，[0,1]区间之间拟合误差的最大值需要小于该设定的$\epsilon$，因为只要误差最大值小于设定的">
+<meta property="og:description" content="本文大部分内容来自李宏毅老师关于深度学习理论的公开课，引用的图片来自课程ppt，按照个人理解做了一些梳理和总结。 1. can shallow NN fit any function? 已经知道的结论是，一个单隐层fcnn而已拟合任意连续函数，那么如何证明呢？首先，在该问题场景下定义出拟合的概念，如下：假定输入的x∈[0,1]，输出y不限定，同时定义一个映射空间和k有关，则对于任意小的数$\eps">
 <meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-38-41.png">
 <meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-39-02.png">
 <meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-40-20.png">
@@ -99,7 +99,7 @@
 <meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-43-21.png">
 <meta property="og:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-44-23.png">
 <meta property="article:published_time" content="2020-02-05T08:52:11.000Z">
-<meta property="article:modified_time" content="2020-02-06T08:41:15.073Z">
+<meta property="article:modified_time" content="2020-02-06T08:58:40.939Z">
 <meta property="article:author" content="MioKinHuang">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://huangmiaoxin.github.io/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-38-41.png">
@@ -285,6 +285,28 @@
           </span>
 
           
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%9B%B8%E5%85%B3%E7%90%86%E8%AE%BA/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习相关理论</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
 
           
             
@@ -312,7 +334,8 @@
       
 
       
-        <h3 id="1-can-shallow-NN-fit-any-function"><a href="#1-can-shallow-NN-fit-any-function" class="headerlink" title="1. can shallow NN fit any function?"></a>1. can shallow NN fit any function?</h3><img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-38-41.png" class="">
+        <p>本文大部分内容来自李宏毅老师关于深度学习理论的公开课，引用的图片来自课程ppt，按照个人理解做了一些梳理和总结。</p>
+<h3 id="1-can-shallow-NN-fit-any-function"><a href="#1-can-shallow-NN-fit-any-function" class="headerlink" title="1. can shallow NN fit any function?"></a>1. can shallow NN fit any function?</h3><img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-38-41.png" class="">
 <p>已经知道的结论是，一个单隐层fcnn而已拟合任意连续函数，那么如何证明呢？<br>首先，在该问题场景下定义出拟合的概念，如下：<br><img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-39-02.png" class=""><br>假定输入的x∈[0,1]，输出y不限定，同时定义一个映射空间和k有关，则对于任意小的数$\epsilon$ ，[0,1]区间之间拟合误差的最大值需要小于该设定的$\epsilon$，因为只要误差最大值小于设定的数，即可推出L2积分误差小于该设定值，符合函数拟合的定义。</p>
 <p>证明：<br>这里只证明待拟合函数$f$是L-Lipschitz函数的情况。定义如下：<br><img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-40-20.png" class=""><br>意味着说输出的变化会小于输入的变化，即该函数起伏较小，是一个较平滑且起伏缓和的函数。</p>
 <p>然后回到拟合的问题上，对于待拟合函数f，如下图，假如我们在f上均匀采样若干个点，每两个点的距离设定为$l$，然后将这些点连接起来，就可以得到初步的拟合函数g，同时，根据拟合的定义，每一段的最大拟合误差需要小于设定的$\epsilon$，又根据Lipschitz条件，我们可以知道图中的$error$一定是小于等于$ l L $，因此只要使得$ l L &lt;= \epsilon $成立，则目标达成，由此可以得到$ k=\frac{1}{l} &gt;= \frac{L}{\epsilon} $<br>即只要切分的数量k够多，对于任意小的$\epsilon$都可以满足拟合条件，由此证明完毕。<br><img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-23-24-56.png" class=""><br>直观地来说，上图的折线图在实际的网络中可以这样凑出来，如下图：<br><img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-41-10.png" class=""><br>每个小区间的直线可以使用两个ReLU函数拼接出来，故最终的网络如下，可以先使用两倍的神经元和ReLU数量得到每段折线图，然后将这些折线图加起来总的折线图。下图的NN实质上是单隐层。<br><img src="/2020/02/05/hungYiLee-DeepLearningTheory1-shadowOrdeep-v1/2020-02-05-22-41-29.png" class=""></p>
@@ -348,6 +371,22 @@
       
       
 
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/02/06/hung-yi-Lee%EF%BC%9ADeepLearningTheory2-md/" rel="prev" title="深度学习中网络参数的迭代求解和数值优化方法">
+                深度学习中网络参数的迭代求解和数值优化方法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
       
 
       
@@ -421,12 +460,21 @@
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-count">2</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
             
 
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">分类</span>
+                
+              </div>
             
 
             
